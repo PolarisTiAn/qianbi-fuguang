@@ -286,6 +286,8 @@ class Pavilion {
     const isCutaway = name === 'cutaway';
     const isEntrance = name === 'entrance';
     if (isEntrance) setColorPlaying(false);
+    this.controls.enableRotate = !isEntrance;
+    this.controls.enableZoom = !isEntrance;
     this.roof.visible = !isCutaway;
     this.northWall.visible = !isCutaway;
     this.eastWall.visible = !isCutaway;
@@ -372,7 +374,7 @@ class Pavilion {
       if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '=', '-', 'Home', 'Escape'].includes(event.key)) return;
       event.preventDefault();
       if (event.key === 'Escape') { setActive(false); el('gallery-enter').focus({ preventScroll: true }); return; }
-      if (this.transition) return;
+      if (this.transition || (currentView === 'entrance' && event.key !== 'Home')) return;
       if (event.key === 'Home') return this.setView('overview');
       if (['+', '='].includes(event.key)) return this.dolly(.88);
       if (event.key === '-') return this.dolly(1.14);

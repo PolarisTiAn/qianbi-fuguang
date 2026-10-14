@@ -14,6 +14,9 @@ const points = [
   { title: '斑驳之中，也有时间', short: '岁月肌理', category: '肌理', x: .89, y: .72, image: 6,
     text: '放大画面右侧，留意颜色深浅、表面斑驳与轮廓的变化。这些都是当前图像中可以观察到的状态。仅凭照片不能确定每处变化的成因，也不能据此推断原色；保留原图，是进一步理解的起点。', prompt: '想一想：哪些细节看得见，哪些判断还需要资料？' }
 ];
+// A single left-to-right route drives both the reading map and 3D picking.
+points.sort((a, b) => a.x - b.x);
+window.QianbiPoints = points.map(({ x, y }) => ({ x, y }));
 const $ = selector => document.querySelector(selector);
 const viewer = $('#viewer');
 const stage = $('#art-stage');
@@ -28,8 +31,8 @@ let offsetX = 0;
 let offsetY = 0;
 let selected = 0;
 let tourStep = -1;
-const route = [0, 1, 2, 5];
-const stationNames = ['第一站 · 读山', '第二站 · 见殿', '第三站 · 寻路', '第四站 · 留光'];
+const route = points.map((_, index) => index);
+const stationNames = points.map((point, index) => `第 ${index + 1} 站 · ${point.short}`);
 const pointers = new Map();
 let priorSize = { width: 0, height: 0 };
 
@@ -50,6 +53,11 @@ points.forEach((point, index) => {
   chip.innerHTML = `<span>${String(index + 1).padStart(2, '0')}</span>${point.short}`;
   chip.addEventListener('click', () => { exitTour(false); selectPoint(index); });
   $('#hotspot-list').append(chip);
+  const mapPoint = marker.cloneNode(true);
+  mapPoint.className = 'locator-point';
+  mapPoint.setAttribute('aria-label', `定位第${index + 1}处：${point.short}`);
+  mapPoint.addEventListener('click', () => { exitTour(false); selectPoint(index); });
+  $('#locator-map').append(mapPoint);
 });
 
 function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
@@ -64,6 +72,11 @@ function renderPosition() {
   $('#zoom-value').value = `${zoom.toFixed(1)}×`;
   $('#zoom-out').disabled = zoom <= 1.001;
   $('#zoom-in').disabled = zoom >= 3.999;
+  const box = $('#locator-window');
+  box.style.left = `${clamp(-offsetX / width, 0, 1) * 100}%`;
+  box.style.top = `${clamp(-offsetY / height, 0, 1) * 100}%`;
+  box.style.width = `${Math.min(1, viewer.clientWidth / width) * 100}%`;
+  box.style.height = `${Math.min(1, viewer.clientHeight / height) * 100}%`;
 }
 
 function measureViewer() {
@@ -109,11 +122,17 @@ function selectPoint(index, focusImage = true) {
   $('#look-prompt').textContent = point.prompt;
   $('#detail-image').src = `assets/detail-${point.image}.webp`;
   $('#detail-image').alt = `${point.short}的壁画局部`;
+  $('#reading-position').textContent = `第 ${String(index + 1).padStart(2, '0')} 处 / 共 06 处`;
+  $('#reading-current').textContent = point.short;
+  $('#point-prev').disabled = index === 0;
+  $('#point-next').hidden = index === points.length - 1;
+  $('#reading-color').hidden = index !== points.length - 1;
   $('#view-count').textContent = `已看 ${visited.size} / 6`;
   document.querySelectorAll('.marker').forEach((button, i) => {
     button.setAttribute('aria-pressed', String(i === index));
     button.classList.toggle('visited', visited.has(i));
   });
+  document.querySelectorAll('.locator-point').forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
   document.querySelectorAll('.hotspot-chip').forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
   $('#explorer-status').textContent = `${point.short}。${point.title}。${point.text}`;
   if (focusImage) {
@@ -129,9 +148,7 @@ function showTourStep() {
   selectPoint(route[tourStep]);
   $('#tour-title').textContent = stationNames[tourStep];
   $('#tour-progress').textContent = `${tourStep + 1} / ${route.length}`;
-  $('#tour-prev').disabled = tourStep === 0;
-  $('#tour-next').textContent = tourStep === route.length - 1 ? '完成导览 ✓' : '下一站 →';
-  $('#explorer-status').textContent = `${stationNames[tourStep]}，共${route.length}站。${points[route[tourStep]].text}`;
+  $('#explorer-status').textContent = tourStep === route.length - 1 ? '已到第六处。可以继续探索，或点击去看复色。' : `${stationNames[tourStep]}，共${route.length}站。${points[route[tourStep]].text}`;
 }
 function startTour() {
   if (viewer.classList.contains('expanded')) toggleExpanded(false);
@@ -148,17 +165,16 @@ function exitTour(reset = true) {
   if (wasActive) $('#explorer-status').textContent = '已返回自由探索。';
 }
 
+function stepPoint(delta) {
+  if (tourStep >= 0) {
+    tourStep = clamp(tourStep + delta, 0, route.length - 1);
+    showTourStep();
+  } else selectPoint(clamp(selected + delta, 0, points.length - 1));
+}
+$('#point-prev').addEventListener('click', () => stepPoint(-1));
+$('#point-next').addEventListener('click', () => stepPoint(1));
+$('#reading-color').addEventListener('click', () => exitTour(false));
 document.querySelectorAll('[data-start-tour]').forEach(button => button.addEventListener('click', startTour));
-$('#tour-prev').addEventListener('click', () => { if (tourStep > 0) { tourStep -= 1; showTourStep(); } });
-$('#tour-next').addEventListener('click', () => {
-  if (tourStep < route.length - 1) { tourStep += 1; showTourStep(); }
-  else {
-    exitTour();
-    $('#explorer-status').textContent = '已完成四站导览。可继续自由探索，或向下体验色彩对比。';
-    $('#viewer-help').textContent = '导览已完成 · 继续自由探索，或向下体验色彩对比';
-    viewer.focus({ preventScroll: true });
-  }
-});
 $('#tour-exit').addEventListener('click', () => { exitTour(); viewer.focus({ preventScroll: true }); });
 $('#zoom-in').addEventListener('click', () => zoomAt(zoom + .35));
 $('#zoom-out').addEventListener('click', () => zoomAt(zoom - .35));
@@ -180,7 +196,7 @@ function toggleExpanded(force) {
   // Expanded mode is a modal reading surface; background controls are not focusable.
   const main = $('main');
   Array.from(main.children).filter(el => el.id !== 'explore').forEach(el => { el.inert = expanded; });
-  for (const selector of ['.site-header', '.site-footer', '.explore .section-heading', '.explore-topline', '.detail-panel', '.viewer-bottom', '.hotspot-list', '.tour-bar']) $(selector).inert = expanded;
+  for (const selector of ['.site-header', '.site-footer', '.explore .section-heading', '.explore-topline', '.detail-panel', '.viewer-bottom', '.reading-nav', '.reading-location', '.tour-bar']) $(selector).inert = expanded;
   $('#expand-view').setAttribute('aria-pressed', String(expanded));
   $('#expand-view').setAttribute('aria-label', expanded ? '退出展开画面' : '展开画面');
   $('#expand-view').textContent = expanded ? '×' : '⤢';
@@ -326,3 +342,15 @@ document.addEventListener('gallery:read', event => {
   $('#explore').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
   viewer.focus({ preventScroll: true });
 });
+
+// Keep chapter orientation visible without adding scroll work to the 3D loop.
+const chapterObserver = new IntersectionObserver(entries => {
+  for (const entry of entries) {
+    if (!entry.isIntersecting) continue;
+    for (const link of document.querySelectorAll('.journey-path a, .site-header nav a')) {
+      if (link.hash === `#${entry.target.id}`) link.setAttribute('aria-current', link.closest('.journey-path') ? 'step' : 'location');
+      else link.removeAttribute('aria-current');
+    }
+  }
+}, { rootMargin: '-15% 0px -65% 0px', threshold: 0 });
+for (const id of ['story', 'gallery', 'explore', 'color']) chapterObserver.observe(document.getElementById(id));

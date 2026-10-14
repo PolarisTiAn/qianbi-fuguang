@@ -5,9 +5,9 @@
   let bundlePromise;
   button.addEventListener('click', async () => {
     button.disabled = true;
-    button.textContent = '正在进入洞窟…';
+    button.textContent = '正在走近洞口…';
     frame.dataset.state = 'loading';
-    document.querySelector('#gallery-entry-message').textContent = '正在把西壁放回主室关系，请稍候。';
+    document.querySelector('#gallery-entry-message').textContent = '正在准备洞口与洞内空间，请稍候。';
     try {
       if (!bundlePromise) bundlePromise = new Promise((resolve, reject) => {
         const script = document.createElement('script');
@@ -24,7 +24,7 @@
       document.querySelector('#gallery-status').textContent = '原位构视暂不可用。下方的壁画探索仍可使用。';
     } finally {
       button.disabled = false;
-      button.innerHTML = '进入原位构视 <span aria-hidden="true">↗</span>';
+      button.innerHTML = '抵达洞口 <span aria-hidden="true">↗</span>';
     }
   });
 })();

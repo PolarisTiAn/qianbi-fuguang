@@ -1,0 +1,240 @@
+[
+  {
+    "file": "east.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/主室-东壁.jpg",
+    "part": "主室-东壁",
+    "crop": [
+      6,
+      6,
+      1056,
+      424
+    ],
+    "pixels": [
+      1050,
+      418
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "south.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/主室-南壁.jpg",
+    "part": "主室-南壁",
+    "crop": [
+      7,
+      6,
+      1052,
+      438
+    ],
+    "pixels": [
+      1045,
+      432
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "north.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/主室-北壁.jpg",
+    "part": "主室-北壁",
+    "crop": [
+      0,
+      1,
+      1064,
+      424
+    ],
+    "pixels": [
+      1064,
+      423
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "roof-east.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/主室-东披.jpg",
+    "part": "主室-东披",
+    "crop": [
+      6,
+      4,
+      943,
+      638
+    ],
+    "pixels": [
+      937,
+      633
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "roof-south.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/主室-南披.jpg",
+    "part": "主室-南披",
+    "crop": [
+      8,
+      13,
+      985,
+      569
+    ],
+    "pixels": [
+      977,
+      539
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "roof-west.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/主室-西披.jpg",
+    "part": "主室-西披",
+    "crop": [
+      7,
+      4,
+      960,
+      602
+    ],
+    "pixels": [
+      953,
+      581
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "roof-north.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/主室-北披.jpg",
+    "part": "主室-北披",
+    "crop": [
+      4,
+      5,
+      976,
+      592
+    ],
+    "pixels": [
+      972,
+      585
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "caisson.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/主室-藻井.jpg",
+    "part": "主室-藻井",
+    "crop": [
+      17,
+      17,
+      843,
+      741
+    ],
+    "pixels": [
+      826,
+      724
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "screen.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/主室-背屏.jpg",
+    "part": "主室-背屏",
+    "crop": [
+      5,
+      5,
+      761,
+      849
+    ],
+    "pixels": [
+      756,
+      844
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "passage-south.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/甬道-南壁.jpg",
+    "part": "甬道-南壁",
+    "crop": [
+      5,
+      6,
+      1070,
+      393
+    ],
+    "pixels": [
+      1065,
+      387
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "passage-north.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/甬道-北壁.jpg",
+    "part": "甬道-北壁",
+    "crop": [
+      6,
+      6,
+      1048,
+      444
+    ],
+    "pixels": [
+      1042,
+      438
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "passage-slope-south.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/甬道-南披.jpg",
+    "part": "甬道-南披",
+    "crop": [
+      7,
+      5,
+      1130,
+      144
+    ],
+    "pixels": [
+      1123,
+      139
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "passage-slope-north.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/甬道-北披.jpg",
+    "part": "甬道-北披",
+    "crop": [
+      8,
+      10,
+      1109,
+      230
+    ],
+    "pixels": [
+      1101,
+      220
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "passage-top.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/surfaces/甬道-顶部.jpg",
+    "part": "甬道-顶部",
+    "crop": [
+      9,
+      10,
+      1008,
+      521
+    ],
+    "pixels": [
+      999,
+      511
+    ],
+    "processing": "Crop black surround; transparent border-connected black; roof trapezoid rows normalized for UV mapping; no color correction or watermark removal",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  }
+]

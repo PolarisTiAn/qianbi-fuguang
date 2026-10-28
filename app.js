@@ -308,7 +308,10 @@ function setColorProcess(stage) {
   $('#gallery-color-caption').textContent = stages[index].name;
   document.querySelectorAll('[data-color-stage]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.colorStage) === index)));
   const colorStatus = `色彩阶段：${stages[index].name}。${stages[index].description}`;
-  if ($('#gallery-status').textContent !== colorStatus) $('#gallery-status').textContent = colorStatus;
+  if ($('#gallery-color-range').dataset.announcedStage !== String(index)) {
+    $('#gallery-status').textContent = colorStatus;
+    $('#gallery-color-range').dataset.announcedStage = String(index);
+  }
   window.dispatchEvent(new CustomEvent('qianbi:color-stage-changed', { detail: { stage: amount } }));
 }
 document.querySelectorAll('[data-color-stage]').forEach(button => button.addEventListener('click', () => setColorProcess(button.dataset.colorStage)));

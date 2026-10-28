@@ -1,0 +1,337 @@
+[
+  {
+    "file": "altar-upper-south.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/zhushi/f.jpg",
+    "part": "上层坛南侧前脸，可见局部",
+    "corners": [
+      [
+        0,
+        851
+      ],
+      [
+        271,
+        871
+      ],
+      [
+        271,
+        960
+      ],
+      [
+        0,
+        952
+      ]
+    ],
+    "pixels": [
+      540,
+      180
+    ],
+    "processing": "Four-corner perspective rectification of visible source area; photograph lighting retained; estimated correspondence",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "altar-upper-north.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/zhushi/f.jpg",
+    "part": "上层坛北侧前脸，可见局部",
+    "corners": [
+      [
+        1312,
+        874
+      ],
+      [
+        1535,
+        857
+      ],
+      [
+        1535,
+        967
+      ],
+      [
+        1310,
+        963
+      ]
+    ],
+    "pixels": [
+      450,
+      180
+    ],
+    "processing": "Four-corner perspective rectification of visible source area; photograph lighting retained; estimated correspondence",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "altar-upper-inset.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/zhushi/f.jpg",
+    "part": "上层坛前部凹口内立面",
+    "corners": [
+      [
+        462,
+        831
+      ],
+      [
+        1078,
+        837
+      ],
+      [
+        1078,
+        888
+      ],
+      [
+        460,
+        887
+      ]
+    ],
+    "pixels": [
+      1200,
+      132
+    ],
+    "processing": "Four-corner perspective rectification of visible source area; photograph lighting retained; estimated correspondence",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "altar-lower-south.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/zhushi/f.jpg",
+    "part": "下层坛南侧前脸，可见局部",
+    "corners": [
+      [
+        0,
+        1081
+      ],
+      [
+        329,
+        1093
+      ],
+      [
+        330,
+        1303
+      ],
+      [
+        0,
+        1317
+      ]
+    ],
+    "pixels": [
+      600,
+      390
+    ],
+    "processing": "Four-corner perspective rectification of visible source area; photograph lighting retained; estimated correspondence",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "altar-lower-north.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/zhushi/f.jpg",
+    "part": "下层坛北侧前脸，可见局部",
+    "corners": [
+      [
+        1249,
+        1104
+      ],
+      [
+        1535,
+        1095
+      ],
+      [
+        1535,
+        1303
+      ],
+      [
+        1247,
+        1305
+      ]
+    ],
+    "pixels": [
+      570,
+      390
+    ],
+    "processing": "Four-corner perspective rectification of visible source area; photograph lighting retained; estimated correspondence",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "floor-photo.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/beiping/d.jpg",
+    "part": "屏后铺地照片样本；重复铺设，不代表逐砖测绘",
+    "corners": [
+      [
+        365,
+        257
+      ],
+      [
+        1187,
+        179
+      ],
+      [
+        1268,
+        929
+      ],
+      [
+        438,
+        1012
+      ]
+    ],
+    "pixels": [
+      1024,
+      1024
+    ],
+    "processing": "Four-corner perspective rectification of visible source area; photograph lighting retained; estimated correspondence",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "earth-photo.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/fotannan/d.jpg",
+    "part": "佛坛素土表面样本；重复铺设只表达材质，不代表每处裂痕位置",
+    "corners": [
+      [
+        220,
+        430
+      ],
+      [
+        780,
+        430
+      ],
+      [
+        780,
+        990
+      ],
+      [
+        220,
+        990
+      ]
+    ],
+    "pixels": [
+      768,
+      768
+    ],
+    "processing": "Four-corner perspective rectification of visible source area; photograph lighting retained; estimated correspondence",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "screen-rear-projected.webp",
+    "source_files": [
+      "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/beiping/f.jpg",
+      "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/beiping/r.jpg",
+      "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/beiping/b.jpg",
+      "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/beiping/l.jpg",
+      "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/beiping/u.jpg",
+      "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/beiping/d.jpg"
+    ],
+    "part": "背屏背面六面全景重投影",
+    "processing": "Cubemap ray reprojection into an estimated plane; adjacent architecture masked; transparent gaps remain unfilled; no generative content",
+    "fit": {
+      "width": 5.1,
+      "height": 6.94,
+      "camera_height": 1.6,
+      "plane_distance": 1.0,
+      "roll": 0.06,
+      "pitch": -0.2,
+      "units": "estimated metres and radians"
+    },
+    "masks": {
+      "f": [
+        [
+          0,
+          0
+        ],
+        [
+          1535,
+          0
+        ],
+        [
+          1535,
+          1535
+        ],
+        [
+          0,
+          1535
+        ]
+      ],
+      "r": [
+        [
+          0,
+          0
+        ],
+        [
+          425,
+          0
+        ],
+        [
+          310,
+          1000
+        ],
+        [
+          0,
+          1440
+        ]
+      ],
+      "l": [
+        [
+          1130,
+          0
+        ],
+        [
+          1535,
+          0
+        ],
+        [
+          1535,
+          1535
+        ],
+        [
+          1250,
+          1200
+        ]
+      ],
+      "u": [
+        [
+          0,
+          955
+        ],
+        [
+          315,
+          810
+        ],
+        [
+          440,
+          775
+        ],
+        [
+          1090,
+          800
+        ],
+        [
+          1210,
+          865
+        ],
+        [
+          1535,
+          1080
+        ],
+        [
+          1535,
+          1535
+        ],
+        [
+          0,
+          1535
+        ]
+      ],
+      "d": [
+        [
+          0,
+          0
+        ],
+        [
+          1535,
+          0
+        ],
+        [
+          1535,
+          135
+        ],
+        [
+          0,
+          277
+        ]
+      ],
+      "b": []
+    },
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  }
+]

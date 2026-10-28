@@ -7,10 +7,10 @@
   <meta name="description" content="千壁浮光，以莫高窟第61窟五台山图为起点，在山水、殿宇与行旅之间，开启一次敦煌壁画的交互探索。">
   <title>千壁浮光 · 敦煌壁画交互探索</title>
   <link rel="icon" type="image/svg+xml" href="assets/seal.svg">
-  <link rel="stylesheet" href="styles.css?v=20261014-visual-polish">
+  <link rel="stylesheet" href="styles.css?v=20261028-cave61-refined">
   <script defer src="color-process.js"></script>
-  <script defer src="app.js?v=20261014-arrival"></script>
-  <script defer src="gallery-loader.js?v=20261014-arrival"></script>
+  <script defer src="app.js?v=20261028-cave61-refined"></script>
+  <script defer src="gallery-loader.js?v=20261028-cave61-refined"></script>
 </head>
 <body>
   <a class="skip-link" href="#explore">跳到壁画探索</a>
@@ -74,19 +74,22 @@
               <button class="gallery-enter" id="gallery-enter">抵达洞口 <span aria-hidden="true">↗</span></button>
               <a class="gallery-fallback-link" href="#explore">也可以直接细读画卷 →</a>
             </div>
-            <div class="gallery-hud" aria-hidden="true"><span>莫高窟第 61 窟 <i>／</i> 入窟与西壁</span><span class="gallery-live">空间示意</span></div>
+            <div class="gallery-hud" aria-hidden="true"><span>莫高窟第 61 窟 <i>／</i> 入窟与西壁</span><span class="gallery-live">实景参考模型</span></div>
             <div class="gallery-scene-caption" id="gallery-scene-caption" hidden><span>01 / 主室中央</span><p>西壁 · 上下层壁画关系</p></div>
-            <div class="threshold-prompt" id="threshold-prompt" hidden><span>洞口与甬道 · 空间示意</span><button id="gallery-walk">沿甬道入窟 <span aria-hidden="true">→</span></button><small>穿过甬道，面向主室西壁</small></div>
+            <div class="threshold-prompt" id="threshold-prompt" hidden><span>洞口与甬道 · 实景参考模型</span><button id="gallery-walk">沿甬道入窟 <span aria-hidden="true">→</span></button><small>循着光，分五站走近一壁山河</small></div>
             <button class="gallery-leave" id="gallery-leave" hidden aria-label="退出原位构视，显示静态封面">退出 ×</button>
             <div class="gallery-wall-info" id="gallery-wall-info" hidden>
               <button id="gallery-wall-info-close" aria-label="关闭说明">×</button>
               <strong>西壁下层</strong>
               <p>保留来源整图中的下层壁画及其位置关系；局部内容待进一步考证。</p>
-              <a href="#sources">查看来源与说明 ↗</a>
+              <a href="#beyond">查看来源与说明 ↗</a>
             </div>
           </div>
+          <div class="gallery-route" id="gallery-route" hidden aria-label="入窟导览进度">
+            <button id="gallery-prev" disabled aria-label="返回上一站">← 上一站</button><span id="gallery-position">01 / 05 · 洞口远望</span><button id="gallery-next">下一站 · 甬道 →</button>
+          </div>
           <div class="gallery-toolbar" id="gallery-toolbar" hidden>
-            <div class="gallery-viewpoints" role="group" aria-label="选择原位构视角度"><button data-gallery-view="entrance" aria-pressed="false"><span>洞口</span></button><button data-gallery-view="overview" aria-pressed="false"><span>主室</span></button><button data-gallery-view="front" aria-pressed="false"><span>西壁</span></button><button data-gallery-view="detail" aria-pressed="false"><span>近观</span></button><button data-gallery-view="cutaway" aria-pressed="false"><span>剖视</span></button></div>
+            <div class="gallery-viewpoints" role="group" aria-label="选择原位构视角度"><button data-gallery-view="entrance" aria-pressed="false"><b>01</b><span>洞口</span></button><button data-gallery-view="passage" aria-pressed="false"><b>02</b><span>甬道</span></button><button data-gallery-view="overview" aria-pressed="false"><b>03</b><span>主室</span></button><button data-gallery-view="front" aria-pressed="false"><b>04</b><span>坛后</span></button><button data-gallery-view="detail" aria-pressed="false"><b>05</b><span>近观</span></button><button data-gallery-view="altar" aria-pressed="false"><span>侧观佛坛</span></button><button data-gallery-view="rear" aria-pressed="false"><span>背屏后侧</span></button><button data-gallery-view="ceiling" aria-pressed="false"><span>仰望窟顶</span></button><button data-gallery-view="cutaway" aria-pressed="false"><b aria-hidden="true">⌑</b><span>剖视</span></button></div>
             <div class="gallery-actions"><button id="gallery-zoom-out" aria-label="拉远观看">−</button><button id="gallery-zoom-in" aria-label="拉近观看">＋</button><button id="gallery-auto" aria-pressed="false">缓缓环视</button><button id="gallery-reset" aria-label="重置洞窟视角">归位 ↺</button><button id="gallery-read">细读画卷 ↗</button></div>
           </div>
           <div class="gallery-colorbar" id="gallery-colorbar" hidden>
@@ -94,10 +97,10 @@
             <input id="gallery-color-range" type="range" min="0" max="3" step="0.01" value="0" aria-label="切换壁画色彩处理阶段" aria-valuetext="现状影像">
             <button class="gallery-color-play" id="gallery-color-play" aria-pressed="false">播放复色过程</button>
             <div class="gallery-color-labels" role="group" aria-label="色彩阶段"><button data-color-stage="0" aria-pressed="true">现状影像</button><button data-color-stage="1" aria-pressed="false">明暗调整</button><button data-color-stage="2" aria-pressed="false">色彩增强</button><button data-color-stage="3" aria-pressed="false">复色设想</button></div>
-            <p class="gallery-color-note">数字视觉实验 · 非历史原色复原</p>
+            <p class="gallery-color-note">拖动滑块或播放，观察色彩在壁面上逐步展开。数字视觉实验 · 非历史原色复原</p>
           </div>
         </div>
-        <div class="gallery-bottom"><p id="gallery-help">先点击“沿甬道入窟” · 入室后可拖动转向、拉近观看 · 点击西壁细读</p><span>洞口与甬道为示意 · 非精确测绘复原</span></div>
+        <div class="gallery-bottom"><p id="gallery-help">按“下一站”循序入窟 · 入室后拖动转向、双指缩放 · 点击西壁细读</p><span>据实景建模 · 尺寸为照片估计</span></div>
         <p class="sr-only" id="gallery-status" role="status" aria-live="polite"></p>
       </div>
     </section>
@@ -121,7 +124,7 @@
               <p class="image-error" id="image-error" hidden>壁画暂未加载，请刷新页面重试。</p>
             </div>
             <div class="reading-location"><span>你在画中的位置</span><div class="locator-map" id="locator-map"><img src="assets/wutai-mural.webp" alt="全幅定位图" width="3286" height="955"><div id="locator-window" aria-hidden="true"></div></div></div>
-            <div class="viewer-bottom"><p id="viewer-help">拖动画面 · 点击后滚轮缩放 · 手机可双指缩放</p><a href="#sources">图像 © 数字敦煌</a></div>
+            <div class="viewer-bottom"><p id="viewer-help">拖动画面 · 点击后滚轮缩放 · 手机可双指缩放</p><a href="#beyond">图像 © 数字敦煌</a></div>
           </div>
           <aside class="detail-panel" aria-labelledby="detail-title">
             <div class="detail-panel-top"><span id="detail-kicker">观看线索 / 01</span><button id="close-detail" aria-label="收起当前讲解">×</button></div>
@@ -163,9 +166,9 @@
     <section class="sources section-shell" id="sources" aria-labelledby="sources-title">
       <div><h2 id="sources-title">有所据，<br>有所留白。</h2><p class="sources-summary">本页为《千壁浮光》交互研讨演示。<br>图像保留来源水印。</p></div>
       <div class="source-details">
-        <details open><summary>图像与文化资料来源 <span>01</span></summary><div><p>壁画主图、局部裁切及洞窟资料：数字敦煌「莫高窟第061窟」。画中漫游呈现西壁上部《五台山图》，不包含下方佛传故事画。</p><a href="https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061" target="_blank" rel="noopener noreferrer">数字敦煌 · 第061窟 ↗</a><p>莫高窟外景：敦煌研究院「莫高窟」介绍页。</p><a href="https://www.dha.ac.cn/skxl/mgk.htm" target="_blank" rel="noopener noreferrer">敦煌研究院 · 莫高窟 ↗</a><p class="source-small">图像权益归来源方所有。本地研讨演示使用；对外发布前，须按来源方规则落实图像使用条件。资料核对日期：2026年10月12日。</p></div></details>
-        <details><summary>原位构视与色彩过程 <span>02</span></summary><div><p>开篇外景为莫高窟整体环境照片，不用于识别第 61 窟的具体洞口。3D 洞口和甬道为引导观看而构建的简化空间，未经测绘确认。3D 场景将西壁公开图像贴附在简化的主室墙面关系中，用于观看位置与尺度的空间理解。现有素材没有整窟激光扫描和逐墙高清壁画图，故场景不是第 61 窟的精确测绘、扫描或历史复原。色彩过程分为现状影像、明暗调整、色彩增强和复色设想；后面三步是基于现状图像的数字视觉实验，不清除病害或补画，不等同于有材料学证据的修复，也不等同于真实历史原色。洞窟剖视暂时隐去顶部及部分墙体，以呈现空间关系。</p></div></details>
-        <details><summary>制作说明 <span>03</span></summary><div><p>项目名称取意于洞窟千壁与浮动光色。AI辅助页面设计、代码编写和讲解草稿；六个热点为图像观察线索，不对人物和寺院作无依据命名。文化资料链接与原图共同保留，便于进一步校对。</p><p>“原位构视”使用 Three.js 将西壁整幅公开图像放回简化主室关系中；不添加展框、展椅或独立展墙。场景为比例与观看关系示意，不主张是第 61 窟的精确三维复原。侧墙保持未考证留白，不放置移植来的装饰或壁画素材。</p><p>项目成员：田隽豪、詹敏欣、张琦、郭慧平。</p></div></details>
+        <details open><summary>图像与文化资料来源 <span>01</span></summary><div><p>壁画主图、局部裁切及洞窟资料：数字敦煌「莫高窟第061窟」。画中漫游呈现西壁上部《五台山图》，不包含下方佛传故事画。</p><a href="https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061" target="_blank" rel="noopener noreferrer">数字敦煌 · 第061窟 ↗</a><p>莫高窟外景：敦煌研究院「莫高窟」介绍页。</p><a href="https://www.dha.ac.cn/skxl/mgk.htm" target="_blank" rel="noopener noreferrer">敦煌研究院 · 莫高窟 ↗</a><p class="source-small">图像权益归来源方所有。本地研讨演示使用；对外发布前，须按来源方规则落实图像使用条件。资料核对日期：2026年10月28日。</p></div></details>
+        <details><summary>原位构视与色彩过程 <span>02</span></summary><div><p>开篇外景为莫高窟整体环境照片，不用于识别第 61 窟的具体洞口。3D 模型参照数字敦煌第 61 窟的 7 个全景机位和逐面图像，建立主室、二层方坛、坛前凹口与踏步、高大背屏、覆斗顶和盝形顶甬道。四壁、四披、藻井、背屏正面和甬道使用各自对应的官方参考图，保留来源水印。各尺寸仍是照片估计，外部立面与角部细节为简化示意。背屏背面采用六面全景重投影；坛前保留对应位置的残存彩绘。四级台阶通向下层台面，上层佛坛向后退入。铺地与素土使用实景局部样本，重复铺设不代表逐砖和逐处裂痕测绘。背屏侧面及缺失影像区域使用中性材质。现有素材没有整窟激光扫描和逐墙高清壁画图，故场景不是第 61 窟的精确测绘、扫描或历史复原。色彩过程分为现状影像、明暗调整、色彩增强和复色设想；后面三步是基于现状图像的数字视觉实验，不清除病害或补画，不等同于有材料学证据的修复，也不等同于真实历史原色。洞窟剖视暂时隐去顶部及部分墙体，以呈现空间关系。</p></div></details>
+        <details><summary>制作说明 <span>03</span></summary><div><p>项目名称取意于洞窟千壁与浮动光色。AI辅助页面设计、代码编写和讲解草稿；六个热点为图像观察线索，不对人物和寺院作无依据命名。文化资料链接与原图共同保留，便于进一步校对。</p><p>“原位构视”使用 Three.js 将西壁整幅公开图像放回简化主室关系中；不添加展框、展椅或独立展墙。场景为比例与观看关系示意，不主张是第 61 窟的精确三维复原。侧墙与窟顶采用对应部位的官方预览图，清晰度有限；未将别窟或局部图像移植为整墙。</p><p>项目成员：田隽豪、詹敏欣、张琦、郭慧平。</p></div></details>
       </div>
     </section>
   </main>

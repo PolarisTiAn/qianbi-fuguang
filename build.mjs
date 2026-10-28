@@ -6,7 +6,7 @@ await build({
   minify: true,
   format: 'iife',
   target: ['es2020'],
-  loader: { '.webp': 'dataurl' },
+  loader: { '.webp': 'dataurl', '.jpg': 'dataurl' },
   outfile: 'gallery.bundle.js',
   legalComments: 'linked'
 });

@@ -1,13 +1,20 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import wallURL from '../assets/west-wall.webp';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { buildCave61, loadCave61References, CAVE61 } from './cave61-model.js';
+import { loadCaveTextures } from './cave-surfaces.js';
+
 
 const el = id => document.getElementById(id);
 const stage = el('gallery-stage');
 const frame = el('gallery-frame');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const viewpointNames = { entrance: '洞口 / 循光而入', overview: '主室 / 初见西壁', front: '西壁 / 一壁山河', detail: '近观 / 山水之间', cutaway: '剖视 / 空间关系' };
-const viewDescriptions = { entrance: '从明处，走向壁画所在的幽微深处。', overview: '面向西壁，看见上下层壁画与主室的关系。', front: '上部《五台山图》 · 下层壁画', detail: '沿着山势与屋宇，慢慢靠近。', cutaway: '隐去部分墙面，理解壁画如何留在一室之中。' };
+const route = ['entrance', 'passage', 'overview', 'front', 'detail'];
+const routeLabels = ['洞口远望', '循光入甬道', '主室与佛坛', '绕至西壁', '近观山河'];
+const viewpointNames = { entrance:'洞口 / 循光而入', passage:'甬道 / 壁上星宿', overview:'主室 / 方坛与背屏', front:'坛后 / 走近西壁', detail:'近观 / 山水之间', altar:'侧观 / 二层方坛', rear:'屏后 / 环绕通道', ceiling:'仰望 / 藻井与千佛', cutaway:'剖视 / 空间关系' };
+const viewDescriptions = { entrance:'由洞口进入，观察甬道的平顶与两侧斜披。外部立面为示意。', passage:'壁画沿甬道展开，前方是方坛与高大的背屏。', overview:'四级踏步通向下层台面，上层佛坛向后退入。', front:'绕到背屏后方，走近《五台山图》。完整画卷可在下方展开。', detail:'西壁上部的山水与屋宇，下方是连屏式佛传故事。', altar:'侧看两层退台、台面残迹与独立背屏。', rear:'屏后立佛壁画来自六面全景的重投影；形状与比例仍为估计。', ceiling:'四面斜披收向中央藻井，千佛图案绘在壁面上。', cutaway:'隐去窟顶、东壁与北壁，查看方坛和环绕通道。' };
+const isThreshold = view => view === 'entrance' || view === 'passage';
 const colorStages = window.QianbiColor.stages;
 let pavilion = null;
 let active = false;
@@ -16,13 +23,14 @@ let spinning = false;
 let colorPlaying = false;
 let currentView = 'entrance';
 
+function visibleAncestors(object){for(let p=object;p;p=p.parent)if(!p.visible)return false;return true;}
 function announce(text) { el('gallery-status').textContent = text; }
 function readMural(index) {
   setSpinning(false);
   document.dispatchEvent(new CustomEvent('gallery:read', { detail: { index } }));
 }
 function setSpinning(value) {
-  if (pavilion && value && (currentView === 'cutaway' || currentView === 'entrance' || pavilion.transition)) pavilion.setView('overview', true);
+  if (pavilion && value && (currentView === 'cutaway' || isThreshold(currentView) || pavilion.transition)) pavilion.setView('overview', true);
   spinning = value;
   el('gallery-auto').setAttribute('aria-pressed', String(value));
   el('gallery-auto').textContent = value ? '暂停环视' : '缓缓环视';
@@ -33,9 +41,10 @@ function setActive(value) {
   frame.dataset.state = value ? 'active' : 'idle';
   el('gallery-entry').hidden = value;
   el('gallery-toolbar').hidden = !value;
+  el('gallery-route').hidden = !value;
   el('gallery-scene-caption').hidden = !value;
   el('gallery-leave').hidden = !value;
-  el('gallery-colorbar').hidden = !value || currentView === 'entrance';
+  el('gallery-colorbar').hidden = !value || isThreshold(currentView);
   el('threshold-prompt').hidden = !value || currentView !== 'entrance';
   if (pavilion) pavilion.renderer.domElement.hidden = !value;
   if (!value) {
@@ -66,27 +75,31 @@ function syncPlayback() {
   frame.dataset.rendering = String(playing);
 }
 
-function textureFromCanvas(canvas) {
+function textureFromCanvas(canvas, colorSpace = THREE.SRGBColorSpace) {
   const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.colorSpace = colorSpace;
   return texture;
 }
-function plasterTexture() {
+function plasterReliefTexture() {
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = 256;
   const ctx = canvas.getContext('2d');
-  const data = ctx.createImageData(256, 256);
-  let seed = 61;
-  for (let i = 0; i < data.data.length; i += 4) {
+  ctx.fillStyle = '#808080';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  let seed = 1427;
+  const random = () => {
     seed = (seed * 16807) % 2147483647;
-    const value = 178 + (seed % 43);
-    data.data[i] = value; data.data[i + 1] = value; data.data[i + 2] = value;
-    data.data[i + 3] = 255;
+    return seed / 2147483647;
+  };
+  for (let i = 0; i < 6200; i++) {
+    const value = 104 + Math.floor(random() * 72);
+    ctx.fillStyle = `rgba(${value},${value},${value},${.16 + random() * .28})`;
+    const size = .4 + random() * 2.4;
+    ctx.fillRect(random() * canvas.width, random() * canvas.height, size, size);
   }
-  ctx.putImageData(data, 0, 0);
-  const texture = textureFromCanvas(canvas);
+  const texture = textureFromCanvas(canvas, THREE.NoColorSpace);
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(7, 3);
+  texture.repeat.set(5.5, 2.8);
   return texture;
 }
 function loadImage(url) {
@@ -101,7 +114,7 @@ function loadImage(url) {
 
 function colorTexture(image, index) {
   const canvas = document.createElement('canvas');
-  canvas.width = Math.min(2560,image.naturalWidth);
+  canvas.width = Math.min(stage.clientWidth < 600 ? 2048 : 4096,image.naturalWidth);
   canvas.height = Math.round(image.naturalHeight*canvas.width/image.naturalWidth);
   const ctx = canvas.getContext('2d',{willReadFrequently:true});
   ctx.drawImage(image,0,0,canvas.width,canvas.height);
@@ -117,17 +130,19 @@ async function loadColorStages(url) {
 }
 
 class Pavilion {
-  constructor(wallStages) {
+  constructor(wallStages, references, surfaceTextures) {
     this.wallStages = wallStages;
-    this.textures = new Set(wallStages);
-    this.pickable = [];
+    this.textures = new Set([...wallStages, ...Object.values(references), ...Object.values(surfaceTextures)]);
+    this.references = references;
+    this.surfaceTextures = surfaceTextures;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 650 ? 1.5 : 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.18;
-    this.renderer.shadowMap.enabled = false;
+    this.renderer.toneMappingExposure = 1.08;
+    this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.autoUpdate = false;
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color('#1a231e');
     this.camera = new THREE.PerspectiveCamera(48, 1, .1, 65);
@@ -155,7 +170,7 @@ class Pavilion {
     this.controls.maxPolarAngle = 1.76;
     this.controls.rotateSpeed = .48;
     this.controls.zoomSpeed = .7;
-    this.controls.addEventListener('start', () => { setSpinning(false); this.transition = null; });
+    this.controls.addEventListener('start', () => { setSpinning(false); });
     this.controls.update();
     this.build();
     this.bindInteraction(canvas);
@@ -175,77 +190,51 @@ class Pavilion {
     });
   }
   own(texture) { this.textures.add(texture); return texture; }
-  box(w, h, d, x, y, z, material, parent = this.scene) {
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
-    mesh.position.set(x, y, z); mesh.receiveShadow = true;
-    parent.add(mesh); return mesh;
-  }
   build() {
-    const plaster = this.own(plasterTexture());
-    const earth = new THREE.MeshStandardMaterial({ color: '#9d876c', map: plaster, roughness: 1 });
-    const roofMaterial = new THREE.MeshStandardMaterial({ color: '#756c58', map: plaster, roughness: 1, side: THREE.DoubleSide });
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: '#8a775b', map: plaster, roughness: 1 });
-    this.roof = new THREE.Group();
-    this.scene.add(this.roof);
-    const W = 13, D = 13, H = W * 1427 / 3286;
-    this.box(W + .44, .24, D + .44, 0, -.12, 0, floorMaterial);
-    this.box(W + .44, H, .22, 0, H / 2, -6.61, earth);
-    this.southWall = this.box(.22, H, D, -6.61, H / 2, 0, earth);
-    this.northWall = this.box(.22, H, D, 6.61, H / 2, 0, earth);
-    this.eastWall = new THREE.Group(); this.scene.add(this.eastWall);
-    this.box(5.3, H, .22, -3.85, H / 2, 6.61, earth, this.eastWall);
-    this.box(5.3, H, .22, 3.85, H / 2, 6.61, earth, this.eastWall);
-    this.box(2.4, H - 3, .22, 0, (H + 3) / 2, 6.61, earth, this.eastWall);
-    // Four sloping faces and a flat central panel follow the inverted-funnel
-    // ceiling visible in the supplied cave photograph. Dimensions are schematic.
-    const bottom = [[-6.5,H,-6.5],[6.5,H,-6.5],[6.5,H,6.5],[-6.5,H,6.5]];
-    const top = [[-1.6,8,-1.6],[1.6,8,-1.6],[1.6,8,1.6],[-1.6,8,1.6]];
-    for (let i = 0; i < 4; i++) {
-      const j = (i + 1) % 4;
-      const geometry = new THREE.BufferGeometry();
-      geometry.setAttribute('position', new THREE.Float32BufferAttribute([...bottom[i],...bottom[j],...top[j],...top[i]],3));
-      geometry.setIndex([0,1,2,0,2,3]); geometry.computeVertexNormals();
-      this.roof.add(new THREE.Mesh(geometry, roofMaterial));
-    }
-    this.box(3.2,.08,3.2,0,8,0,roofMaterial,this.roof);
+    const relief = this.own(plasterReliefTexture());
+    buildCave61(this,this.references,this.surfaceTextures);
+    const W=CAVE61.width,H=CAVE61.wallHeight;
     // One continuous image fills the west wall. No display frame or decorative strip.
-    this.wallMaterial = new THREE.MeshBasicMaterial({ map: this.wallStages[0], toneMapped: false });
+    this.wallMaterial = new THREE.MeshStandardMaterial({ map: this.wallStages[0], roughness: 1, bumpMap: relief, bumpScale: .008, emissive: '#ffffff', emissiveIntensity: .04 });
+    const anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
+    this.wallStages.forEach(texture => { texture.anisotropy = anisotropy; });
+    this.colorUniforms = { nextWallMap: { value: this.wallStages[1] }, colorReveal: { value: 0 } };
+    // Blend stages on the same lit wall. Endpoints remain exact; the soft edge
+    // describes a visual treatment, not a claim about pigment restoration order.
+    this.wallMaterial.onBeforeCompile = shader => {
+      Object.assign(shader.uniforms, this.colorUniforms);
+      shader.fragmentShader = 'uniform sampler2D nextWallMap;\nuniform float colorReveal;\n' + shader.fragmentShader;
+      shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', `
+        float edge = vMapUv.x * .84 + (1.0 - vMapUv.y) * .12
+          + .018 * sin(vMapUv.y * 55.0) * sin(vMapUv.x * 40.0);
+        float spread = mix(-.12, 1.12, colorReveal);
+        float reveal = 1.0 - smoothstep(spread - .055, spread + .055, edge);
+        vec4 wallColor = mix(texture2D(map, vMapUv), texture2D(nextWallMap, vMapUv), reveal);
+        diffuseColor *= wallColor;
+        totalEmissiveRadiance *= wallColor.rgb;
+      `);
+    };
+    this.wallMaterial.customProgramCacheKey = () => 'qianbi-lit-wall-reveal-v1';
     this.wallMesh = new THREE.Mesh(new THREE.PlaneGeometry(W,H),this.wallMaterial);
     this.wallMesh.position.set(0,H / 2,-6.48);
     this.wallMesh.name = 'west-wall-source-image';
-    this.scene.add(this.wallMesh); this.pickable.push(this.wallMesh);
-    this.colorOverlayMaterial = new THREE.MeshBasicMaterial({map:this.wallStages[1],toneMapped:false,transparent:true,opacity:0,depthWrite:false});
-    this.colorOverlay = new THREE.Mesh(new THREE.PlaneGeometry(W,H),this.colorOverlayMaterial);
-    this.colorOverlay.position.copy(this.wallMesh.position); this.colorOverlay.position.z += .003;
-    this.scene.add(this.colorOverlay);
-    // A neutral mass indicates the raised central platform visible in the source
-    // photograph; no statues or unverified decoration are invented.
-    const platformMaterial = new THREE.MeshStandardMaterial({color:'#82705a',map:plaster,roughness:1});
-    this.platform = this.box(4.2,.65,4.5,0,.325,-.6,platformMaterial);
-    this.box(4.7,.2,5.0,0,.1,-.35,platformMaterial);
-    // Fine dashed edges make the omitted surfaces readable in the cutaway view.
-    this.cutawayEdges = new THREE.Group(); this.scene.add(this.cutawayEdges);
-    for (const box of [this.southWall,this.northWall,...this.eastWall.children]) {
-      const lines = new THREE.LineSegments(new THREE.EdgesGeometry(box.geometry), new THREE.LineDashedMaterial({color:'#c9b78d',dashSize:.16,gapSize:.12,transparent:true,opacity:.65}));
-      lines.position.copy(box.position); lines.computeLineDistances(); this.cutawayEdges.add(lines);
-    }
-    // Interpretive entrance and passage, not a surveyed Cave 61 facade.
-    this.passage = new THREE.Group(); this.scene.add(this.passage);
-    const rock = new THREE.MeshStandardMaterial({color:'#b39a79',map:plaster,roughness:1});
-    this.box(10,.2,9,0,-.14,11,earth,this.passage);
-    this.box(.3,3.2,3.9,-1.35,1.6,8.5,earth,this.passage);
-    this.box(.3,3.2,3.9,1.35,1.6,8.5,earth,this.passage);
-    this.box(3,.25,3.9,0,3.32,8.5,roofMaterial,this.passage);
-    this.box(3.8,7,.8,-3.25,3.5,10.45,rock,this.passage);
-    this.box(3.8,7,.8,3.25,3.5,10.45,rock,this.passage);
-    this.box(2.7,3.8,.8,0,5.1,10.45,rock,this.passage);
-    const entranceLight = new THREE.PointLight('#ffe4b5',35,12);
-    entranceLight.position.set(0,4,14); this.passage.add(entranceLight);
-    this.scene.add(new THREE.HemisphereLight('#eee0c8','#3c3930',2.2));
-    const key = new THREE.DirectionalLight('#fff1d8',2.2); key.position.set(1,7,9);
-    this.scene.add(key);
-    const bounce = new THREE.PointLight('#c7d6c6',24,18); bounce.position.set(-4,4,0); this.scene.add(bounce);
+    this.wallMesh.receiveShadow = true;
+
+    this.modelRoot.add(this.wallMesh);
+    this.passageLight = new THREE.PointLight('#fff0dd',10,12,2);
+    this.passageLight.position.set(0,2.8,11.7);this.scene.add(this.passageLight);
+    this.caveAmbient = new THREE.HemisphereLight('#f2eee6','#968776',1.75);this.scene.add(this.caveAmbient);
+    this.doorLight = new THREE.DirectionalLight('#fff4e2',1.4);
+    this.doorLight.position.set(-1.5,6,16);this.doorLight.target.position.set(0,1,3);
+    this.doorLight.castShadow=true;
+    this.doorLight.shadow.mapSize.set(1024,1024);
+    Object.assign(this.doorLight.shadow.camera,{left:-9,right:9,top:9,bottom:-9,near:.5,far:32});
+    this.doorLight.shadow.bias=-.0003;this.doorLight.shadow.normalBias=.04;
+    this.scene.add(this.doorLight,this.doorLight.target);
+    this.muralLight=new THREE.PointLight('#fff5e5',35,22,2);this.muralLight.position.set(0,4,2.8);this.scene.add(this.muralLight);
+    this.bounceLight=new THREE.PointLight('#f4e8d8',18,15,2);this.bounceLight.position.set(0,4.4,-5.5);this.scene.add(this.bounceLight);
     this.scene.updateMatrixWorld(true);
+    this.renderer.shadowMap.needsUpdate = true;
   }
   setColorStage(value) {
     const amount = THREE.MathUtils.clamp(Number(value) || 0,0,3);
@@ -253,26 +242,62 @@ class Pavilion {
     if (this.wallMaterial.map !== this.wallStages[base]) {
       this.wallMaterial.map = this.wallStages[base]; this.wallMaterial.needsUpdate = true;
     }
-    if (this.colorOverlayMaterial.map !== this.wallStages[next]) {
-      this.colorOverlayMaterial.map = this.wallStages[next]; this.colorOverlayMaterial.needsUpdate = true;
-    }
-    this.colorOverlayMaterial.opacity = amount - base;
+    this.colorUniforms.nextWallMap.value = this.wallStages[next];
+    this.colorUniforms.colorReveal.value = amount - base;
     frame.dataset.colorStage = amount.toFixed(2);
     if (active && inView) this.render();
   }
+  viewPreset(name) {
+    const presets = {
+      entrance:{position:[0,1.8,15.8],target:[0,2.6,9]},
+      passage:{position:[0,1.8,9.4],target:[0,2.9,-4.1]},
+      overview:{position:[0,1.85,5.3],target:[0,2.8,-4.1]},
+      front:{position:[0,2.5,-5.4],target:[0,2.5,-6.48]},
+      detail:{position:[3.6,2.7,-5.35],target:[3.1,3.1,-6.48]},
+      altar:{position:[5.25,2.6,1.4],target:[0,2.9,-2.7]},
+      rear:{position:[-2.3,2.5,-6.1],target:[0,3.7,-4.5]},
+      ceiling:{position:[0,2.1,4.5],target:[0,7.7,0]},
+      cutaway:{position:stage.clientWidth<600?[21,24,27]:[15,18,20],target:[0,2.2,0]}
+    };
+    return presets[name];
+  }
+  viewFov(name) {
+    if(name==='cutaway') return 48;
+    if(name==='front'||name==='detail')return stage.clientWidth<600?90:78;
+    if(name==='ceiling')return stage.clientWidth<600?94:85;
+    if(name==='rear')return 90;
+    if(name==='overview')return stage.clientWidth<600?94:74;
+    return stage.clientWidth<600?94:name==='entrance'?64:76;
+  }
+
   resize() {
     const width = stage.clientWidth, height = stage.clientHeight;
+    if (!width || !height) return;
     this.camera.aspect = width / height;
-    this.camera.fov = currentView === 'cutaway' ? 48 : currentView === 'entrance' ? 58 : width < 600 ? 80 : 56;
-    this.camera.updateProjectionMatrix();
+    this.renderer.setPixelRatio(Math.min(devicePixelRatio, width < 600 ? 1.5 : 2));
     this.renderer.setSize(width, height, false);
+    this.camera.fov = this.viewFov(currentView);
+    this.camera.updateProjectionMatrix();
+    if (this.transition) this.transition.endFov = this.camera.fov;
+    if (currentView === 'cutaway') this.camera.position.set(...this.viewPreset('cutaway').position);
     this.render();
+  }
+  updateRoute() {
+    const index = route.indexOf(currentView);
+    el('gallery-position').textContent = index < 0 ? '自由观察 · 随时返回导览' : `${String(index + 1).padStart(2, '0')} / 05 · ${routeLabels[index]}`;
+    el('gallery-prev').disabled = index === 0;
+    el('gallery-next').textContent = index < 0 ? '返回主室 →' : index === 4 ? '细读画卷 →' : `下一站 · ${viewpointNames[route[index + 1]].split(' / ')[0]} →`;
+  }
+  step(direction) {
+    const index = route.indexOf(currentView);
+    if (index < 0) return this.setView('overview');
+    if (direction > 0 && index === route.length - 1) return readMural(null);
+    this.setView(route[THREE.MathUtils.clamp(index + direction, 0, route.length - 1)]);
   }
   setView(name, immediate = false) {
     if (!viewpointNames[name]) return;
     setSpinning(false);
     const previousView = currentView;
-    // Flush damping under the old limits, before assigning a new viewpoint.
     this.controls.enableDamping = false;
     if (!this.transition) this.controls.update();
     this.controls.enableDamping = !reducedMotion.matches;
@@ -282,53 +307,63 @@ class Pavilion {
     document.querySelectorAll('[data-gallery-view]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.galleryView === name)));
     el('gallery-scene-caption').firstElementChild.textContent = viewpointNames[name];
     el('gallery-scene-caption').lastElementChild.textContent = viewDescriptions[name];
-    const narrow = stage.clientWidth < 600;
+    this.updateRoute();
     const isCutaway = name === 'cutaway';
-    const isEntrance = name === 'entrance';
-    if (isEntrance) setColorPlaying(false);
-    this.controls.enableRotate = !isEntrance;
-    this.controls.enableZoom = !isEntrance;
-    this.roof.visible = !isCutaway;
-    this.northWall.visible = !isCutaway;
-    this.eastWall.visible = !isCutaway;
-    this.passage.visible = !isCutaway;
+    const threshold = isThreshold(name);
+    if (threshold) setColorPlaying(false);
+    this.controls.enableRotate = this.controls.enableZoom = !threshold;
+    this.roof.visible = this.northWall.visible = this.eastWall.visible = this.passage.visible = !isCutaway;
     this.cutawayEdges.visible = isCutaway;
-    this.scene.background.set(isEntrance ? '#b9a68a' : '#1a231e');
-    el('threshold-prompt').hidden = !active || !isEntrance;
-    el('gallery-colorbar').hidden = !active || isEntrance;
-    for (const id of ['gallery-auto', 'gallery-zoom-in', 'gallery-zoom-out']) el(id).disabled = isEntrance;
-    this.controls.minDistance = isCutaway ? 17 : isEntrance ? 18 : 3.8;
-    this.controls.maxDistance = isCutaway ? 43 : isEntrance ? 23 : 13.5;
-    this.controls.minPolarAngle = isCutaway ? .3 : isEntrance ? 1.48 : 1.32;
-    this.controls.maxPolarAngle = isCutaway ? 1.25 : isEntrance ? 1.66 : 1.76;
-    this.controls.minAzimuthAngle = isCutaway ? .05 : isEntrance ? -.1 : -.48;
-    this.controls.maxAzimuthAngle = isCutaway ? 1.4 : isEntrance ? .1 : .48;
-    this.camera.fov = isCutaway ? 48 : isEntrance ? 58 : narrow ? 80 : 56;
-    this.camera.updateProjectionMatrix();
-    const presets = {
-      entrance: { position: [0,1.7,14.5], target: [0,2,-6.45] },
-      overview: { position: [0,1.9,4.7], target: [0,2.85,-6.45] },
-      front: { position: [0,2.85,6], target: [0,2.85,-6.45] },
-      detail: { position: [1.2,3.65,-1.9], target: [.5,3.7,-6.45] },
-      cutaway: { position: narrow ? [24,24,31] : [16,16,21], target: [0,2,0] }
-    };
-    const preset = presets[name];
+    this.renderer.shadowMap.needsUpdate = true;
+    el('threshold-prompt').hidden = !active || name !== 'entrance';
+    el('gallery-colorbar').hidden = !active || threshold;
+    for (const id of ['gallery-auto', 'gallery-zoom-in', 'gallery-zoom-out']) el(id).disabled = threshold;
+    const closeWall=name==='front'||name==='detail';
+    this.controls.minDistance=isCutaway?17:closeWall?.55:1.8;
+    this.controls.maxDistance=isCutaway?50:closeWall?1.65:18;
+    this.controls.minPolarAngle=isCutaway?.25:.1;
+    this.controls.maxPolarAngle=isCutaway?1.25:3.05;
+    const basePreset=this.viewPreset(name);
+    const baseline=new THREE.Spherical().setFromVector3(new THREE.Vector3(...basePreset.position).sub(new THREE.Vector3(...basePreset.target)));
+    this.controls.minAzimuthAngle=isCutaway?.05:baseline.theta-.55;
+    this.controls.maxAzimuthAngle=isCutaway?1.4:baseline.theta+.55;
+    const preset = this.viewPreset(name);
     const endPosition = new THREE.Vector3(...preset.position);
     const endTarget = new THREE.Vector3(...preset.target);
-    // Returning to the doorway or switching to a cutaway does not cross walls.
-    if (immediate || reducedMotion.matches || isEntrance || isCutaway || previousView === 'cutaway') {
+    const endFov = this.viewFov(name);
+    if (immediate || reducedMotion.matches || isCutaway || previousView === 'cutaway') {
       this.transition = null;
       this.controls.enabled = true;
-      this.camera.position.copy(endPosition); this.controls.target.copy(endTarget); this.controls.update(); this.render();
+      this.camera.position.copy(endPosition); this.controls.target.copy(endTarget);
+      this.camera.fov = endFov; this.camera.updateProjectionMatrix();
+      this.controls.update(); this.render();
     } else {
+      const positions = [this.camera.position.clone()];
+      const targets = [this.controls.target.clone()];
+      const append = (position, target) => {
+        positions.push(new THREE.Vector3(...position)); targets.push(new THREE.Vector3(...target));
+      };
+      // Walk outside the actual U-shaped altar (half width 3.68), then
+      // pass behind its west edge. No diagonal interpolation through the screen.
+      const startZ=this.camera.position.z, endZ=endPosition.z;
+      if(startZ<-4.9 && endZ>=-4.9){
+        append([4.65,2.2,-5.45],[0,3,-4.3]);append([4.65,2,3.1],[0,3.2,-4.1]);
+      }else if(startZ<3 && endZ>6.4){append([4.65,2,3.1],[0,3.2,-4.1]);}
+      if(startZ>6.4 && endZ<6.4){append([0,1.8,8.5],[0,3,-4.1]);append([0,1.8,5.5],[0,3.2,-4.1]);}
+      else if(startZ<6.4 && endZ>6.4){append([0,1.8,5.5],[0,2.6,9]);append([0,1.8,8.5],[0,2.6,12]);}
+      if(startZ>=-4.9 && endZ<-4.9){
+        append([4.65,2,3.1],[0,3.2,-4.1]);append([4.65,2.2,-5.45],[0,3,-6.48]);
+      }
+      positions.push(endPosition); targets.push(endTarget);
       this.controls.enabled = false;
-      this.transition = { elapsed: 0, duration: previousView === 'entrance' ? 2.8 : 1.15, position: this.camera.position.clone(), target: this.controls.target.clone(), endPosition, endTarget };
+      const durations = positions.slice(1).map((position,i) => Math.max(.65, position.distanceTo(positions[i]) / 3.4));
+      this.transition = {elapsed:0, duration:durations.reduce((sum,value) => sum + value,0), positions, targets, durations, startFov:this.camera.fov, endFov};
     }
     frame.dataset.transitioning = String(Boolean(this.transition));
-    announce(isEntrance ? '已抵达洞口。点击沿甬道入窟，进入主室。洞口为简化空间示意。' : `已切换至${viewpointNames[name]}。拖动可调整视角，点击壁画可进入细读。`);
+    announce(`${viewpointNames[name]}。${threshold ? '使用下一站继续入窟。尺寸为照片估计。' : '拖动可调整视角，点击壁画可进入细读。'}`);
   }
   dolly(factor) {
-    if (this.transition || currentView === 'entrance') return;
+    if (this.transition || isThreshold(currentView)) return;
     this.transition = null; setSpinning(false);
     const offset = this.camera.position.clone().sub(this.controls.target);
     offset.setLength(THREE.MathUtils.clamp(offset.length() * factor, this.controls.minDistance, this.controls.maxDistance));
@@ -349,16 +384,16 @@ class Pavilion {
       touches.delete(event.pointerId);
       if (!clickStart || clickStart.moved || performance.now() - clickStart.time > 600 || event.button !== 0) { clickStart = null; return; }
       clickStart = null;
-      if (this.transition || currentView === 'entrance') return;
+      if (this.transition || isThreshold(currentView)) return;
       const rect = canvas.getBoundingClientRect();
       const pointer = new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1);
       const ray = new THREE.Raycaster(); ray.setFromCamera(pointer, this.camera);
-      const hit = ray.intersectObjects(this.pickable)[0];
-      if (!hit) return;
+      const hit=ray.intersectObject(this.modelRoot,true).find(hit=>hit.object.visible && visibleAncestors(hit.object));
+      if(!hit || hit.object!==this.wallMesh) return;
       const wallY = (1-hit.uv.y)*1427;
       if (wallY >= 955) {
         el('gallery-wall-info').hidden = false;
-        announce('西壁下层为佛传故事画，尚未配置局部讲解。可查看来源原图。');
+        announce('西壁下层壁画的局部内容待进一步考证，可查看来源原图。');
         return;
       }
       let index;
@@ -374,7 +409,7 @@ class Pavilion {
       if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '=', '-', 'Home', 'Escape'].includes(event.key)) return;
       event.preventDefault();
       if (event.key === 'Escape') { setActive(false); el('gallery-enter').focus({ preventScroll: true }); return; }
-      if (this.transition || (currentView === 'entrance' && event.key !== 'Home')) return;
+      if (this.transition || (isThreshold(currentView) && event.key !== 'Home')) return;
       if (event.key === 'Home') return this.setView('overview');
       if (['+', '='].includes(event.key)) return this.dolly(.88);
       if (event.key === '-') return this.dolly(1.14);
@@ -389,11 +424,19 @@ class Pavilion {
     });
   }
   render() {
-    if (currentView !== 'cutaway' && currentView !== 'entrance' && !this.transition) {
-      this.camera.position.x = THREE.MathUtils.clamp(this.camera.position.x,-6.05,6.05);
-      this.camera.position.y = THREE.MathUtils.clamp(this.camera.position.y,.85,5.2);
-      this.camera.position.z = THREE.MathUtils.clamp(this.camera.position.z,-2.9,6.15);
+    if(currentView!=='cutaway' && !this.transition && !isThreshold(currentView)){
+      const pos=this.camera.position;
+      pos.x=THREE.MathUtils.clamp(pos.x,-6.1,6.1);pos.y=THREE.MathUtils.clamp(pos.y,1.4,4.8);pos.z=THREE.MathUtils.clamp(pos.z,-6.1,6.15);
+      // Keep the camera in the circulation space, never inside/on the altar.
+      if(Math.abs(pos.x)<4.05 && pos.z>-5.05 && pos.z<2.65){
+        const options=[{d:4.05-Math.abs(pos.x),axis:'x',v:Math.sign(pos.x||1)*4.05},{d:pos.z+5.05,axis:'z',v:-5.05},{d:2.65-pos.z,axis:'z',v:2.65}];
+        options.sort((a,b)=>a.d-b.d);pos[options[0].axis]=options[0].v;
+      }
     }
+    const cutaway=currentView==='cutaway';
+    this.caveAmbient.intensity=cutaway?2:1.65;
+    this.renderer.toneMappingExposure=cutaway?1.05:1.0;
+    this.scene.background.set(cutaway?'#252b25':'#b7a389');
     this.camera.lookAt(this.controls.target);
     this.renderer.render(this.scene, this.camera);
   }
@@ -408,9 +451,16 @@ class Pavilion {
     if (this.transition) {
       this.transition.elapsed += dt;
       const t = THREE.MathUtils.clamp(this.transition.elapsed / this.transition.duration, 0, 1);
-      const ease = t * t * (3 - 2 * t);
-      this.camera.position.lerpVectors(this.transition.position, this.transition.endPosition, ease);
-      this.controls.target.lerpVectors(this.transition.target, this.transition.endTarget, ease);
+      let segment = 0, elapsed = this.transition.elapsed;
+      while (segment < this.transition.durations.length - 1 && elapsed > this.transition.durations[segment]) {
+        elapsed -= this.transition.durations[segment++];
+      }
+      const u = THREE.MathUtils.clamp(elapsed / this.transition.durations[segment], 0, 1);
+      const ease = u * u * u * (u * (u * 6 - 15) + 10);
+      this.camera.position.lerpVectors(this.transition.positions[segment], this.transition.positions[segment + 1], ease);
+      this.controls.target.lerpVectors(this.transition.targets[segment], this.transition.targets[segment + 1], ease);
+      this.camera.fov = THREE.MathUtils.lerp(this.transition.startFov, this.transition.endFov, t * t * (3 - 2 * t));
+      this.camera.updateProjectionMatrix();
       if (t === 1) {
         this.transition = null;
         this.controls.enabled = true;
@@ -419,8 +469,9 @@ class Pavilion {
     } else if (spinning) {
       this.orbitDirection ??= 1;
       this.orbitAngle += dt * .055 * this.orbitDirection;
-      if (this.orbitAngle > .4) { this.orbitAngle = .4; this.orbitDirection = -1; }
-      else if (this.orbitAngle < -.4) { this.orbitAngle = -.4; this.orbitDirection = 1; }
+      const min=this.controls.minAzimuthAngle+.1,max=this.controls.maxAzimuthAngle-.1;
+      if(this.orbitAngle>max){this.orbitAngle=max;this.orbitDirection=-1;}
+      else if(this.orbitAngle<min){this.orbitAngle=min;this.orbitDirection=1;}
       const spherical = new THREE.Spherical().setFromVector3(this.camera.position.clone().sub(this.controls.target));
       spherical.theta = this.orbitAngle;
       this.camera.position.copy(this.controls.target).add(new THREE.Vector3().setFromSpherical(spherical));
@@ -438,11 +489,34 @@ class Pavilion {
 }
 
 window.QianbiGallery = {
+  inspect(){
+    if(!pavilion)return null;
+    const objects=[];pavilion.modelRoot.traverse(o=>{if(o.isMesh)objects.push({name:o.name,vertices:o.geometry.attributes.position.count});});
+    return {camera:pavilion.camera.position.toArray(),target:pavilion.controls.target.toArray(),parameters:CAVE61,objects};
+  },
+  async exportModel(){
+    if(!pavilion)throw new Error('Enter the model first');
+    const model=pavilion.modelRoot.clone(true);model.traverse(o=>{o.visible=true;if(o.name==='west-wall-source-image')o.material=new THREE.MeshStandardMaterial({map:pavilion.wallStages[0],roughness:1,side:THREE.DoubleSide});});
+    return new GLTFExporter().parseAsync(model,{binary:true,onlyVisible:true,maxTextureSize:2048});
+  },
   async enter() {
     if (!pavilion) {
       const wallStages = await loadColorStages(wallURL);
-      try { pavilion = new Pavilion(wallStages); }
-      catch (error) { wallStages.forEach(texture => texture.dispose()); throw error; }
+      let caveTextures;
+      let surfaceTextures;
+      try {
+        const resources=await Promise.allSettled([loadCave61References(),loadCaveTextures()]);
+        if(resources[0].status==='fulfilled')caveTextures=resources[0].value;
+        if(resources[1].status==='fulfilled')surfaceTextures=resources[1].value;
+        const failed=resources.find(result=>result.status==='rejected');
+        if(failed)throw failed.reason;
+        pavilion = new Pavilion(wallStages, caveTextures, surfaceTextures);
+      } catch (error) {
+        wallStages.forEach(texture => texture.dispose());
+        Object.values(caveTextures || {}).forEach(texture => texture.dispose());
+        Object.values(surfaceTextures || {}).forEach(texture => texture.dispose());
+        throw error;
+      }
     }
     setActive(true);
     pavilion.setView('entrance', true);
@@ -462,7 +536,9 @@ reducedMotion.addEventListener('change', () => {
 });
 el('gallery-leave').addEventListener('click', () => { setActive(false); el('gallery-enter').focus({ preventScroll: true }); });
 el('gallery-auto').addEventListener('click', () => { if (pavilion) setSpinning(!spinning); });
-el('gallery-walk').addEventListener('click', () => { pavilion?.setView('overview'); pavilion?.renderer.domElement.focus({ preventScroll: true }); });
+el('gallery-prev').addEventListener('click', () => pavilion?.step(-1));
+el('gallery-next').addEventListener('click', () => pavilion?.step(1));
+el('gallery-walk').addEventListener('click', () => { pavilion?.setView('passage'); pavilion?.renderer.domElement.focus({ preventScroll: true }); });
 el('gallery-reset').addEventListener('click', () => pavilion?.setView('overview'));
 el('gallery-zoom-in').addEventListener('click', () => pavilion?.dolly(.84));
 el('gallery-zoom-out').addEventListener('click', () => pavilion?.dolly(1.19));

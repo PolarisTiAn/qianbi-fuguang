@@ -25,6 +25,15 @@ rectified('altar-lower-south','zhushi','f',[(0,1081),(329,1093),(330,1303),(0,13
 rectified('altar-lower-north','zhushi','f',[(1249,1104),(1535,1095),(1535,1303),(1247,1305)],(570,390),'下层坛北侧前脸，可见局部')
 rectified('floor-photo','beiping','d',[(365,257),(1187,179),(1268,929),(438,1012)],(1024,1024),'屏后铺地照片样本；重复铺设，不代表逐砖测绘')
 rectified('earth-photo','fotannan','d',[(220,430),(780,430),(780,990),(220,990)],(768,768),'佛坛素土表面样本；重复铺设只表达材质，不代表每处裂痕位置')
+# The entrance is represented by the actual door-side rock and threshold
+# paving from the menkou panorama. These are material samples, not a flat
+# replacement for the doorway geometry.
+rock=Image.open(SRC/'menkou/r.jpg').convert('RGB').crop((1100,250,1536,1400)).resize((512,1024),Image.Resampling.BICUBIC)
+rock.save(OUT/'entrance-rock.webp',quality=90,method=6)
+manifest.append(dict(file='entrance-rock.webp',source_file=str(SRC/'menkou/r.jpg'),part='门口侧壁岩土材质样本',crop=(1100,250,1536,1400),pixels=rock.size,processing='Side-rock/plaster crop retained as a repeated material sample; no facade panorama flattening'))
+entrance_floor=Image.open(SRC/'menkou/b.jpg').convert('RGB').crop((230,980,1320,1536)).resize((1024,768),Image.Resampling.BICUBIC)
+entrance_floor.save(OUT/'entrance-floor.webp',quality=90,method=6)
+manifest.append(dict(file='entrance-floor.webp',source_file=str(SRC/'menkou/b.jpg'),part='门口与甬道铺地样本',crop=(230,980,1320,1536),pixels=entrance_floor.size,processing='Interior-facing panorama floor crop retained; grey slab joints and present-day wear left visible'))
 # Reproject all six faces into one estimated screen plane. Source-space masks
 # prevent adjacent walls, floor and ceiling becoming painted onto the screen.
 N=1536

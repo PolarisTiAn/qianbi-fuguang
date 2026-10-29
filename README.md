@@ -4,7 +4,7 @@
 
 ## 打开
 
-直接双击 `index.html`，或双击 `打开网页.command`。点击“进入原位构视”。保持整个文件夹完整即可离线展示，无需为访客安装插件。外部资料来源链接需要联网。
+直接双击 `index.html`，或双击 `打开网页.command`。在“循光入窟”点击“抵达洞口”。保持整个文件夹完整即可离线展示，无需为访客安装插件。外部资料来源链接需要联网。
 
 本机预览地址为 http://127.0.0.1:4173/#gallery ，仅在本地预览服务运行时可用。
 
@@ -45,7 +45,7 @@
 
 页面浏览无需构建或安装依赖。`index.html` 为内容，`styles.css` 为视觉与适配，`app.js` 为原有交互，`gallery-loader.js` 按需加载本地 `gallery.bundle.js`，`assets` 为本地图片。
 
-3D 源码在 `src/gallery.js`，使用固定版本 Three.js 0.180.0（MIT，见 `THREE-LICENSE.txt`）。需要修改三维场景时，安装项目依赖后运行 `npm run build` 重新生成本地包。打包工具为 esbuild 0.25.11。`package-lock.json` 固定依赖版本。
+3D 源码在 `src/gallery.js`，使用固定版本 Three.js 0.180.0（MIT，见 `THREE-LICENSE.txt`）。默认加载 `assets/cave61/Mogao061-interior-final-20261029.glb`，`src/cave61-model.js` 仍保留原程序化模型，供资源加载失败时回退使用。修改 CAVE61 参数只影响备用模型和导览设置；默认模型的几何应在 Blender 中编辑并重新导出。需要修改三维场景时，安装项目依赖后运行 `npm run build`，同时生成界面脚本和供直接打开文件使用的 `assets/cave61/interior-model.offline.js`。打包工具为 esbuild 0.25.11。`package-lock.json` 固定依赖版本。
 
 `qa/3d-results.json` 记录 3D 验证，`qa/results.json` 记录原有交互回归验证；截图在 `qa` 内。本机自动验证使用独立 Chrome 测试环境，手机手势为浏览器模拟，尚未覆盖所有实体手机。
 
@@ -62,6 +62,7 @@
 - assets/cave61/sources.json：14 张逐面来源、裁切框和图像尺寸。
 - scripts/refine-cave61-textures.py 与 assets/cave61/detail-sources.json：8 张细部贴图、四角对应点、屏后全景重投影参数及透明遮罩；完整记录估算依据。
 - 完整侧壁与窟顶图像已经各归原位；图像处理阶段仍只作用于西壁。
+- 入口高模雕刻第一阶段已完成：洞口岩土使用 128×96 细分网格加入照片引导的侵蚀起伏，木门、门框、百叶和门槛使用带圆角的高面数构件；这一步是照片估算雕刻，不是扫描复原。
 - 四级磨损踏步升到下层台面，上层向后退入；背屏后侧延至地面，肩部曲线、角部浅凹和坛上残迹均保留为估算形态；绕行路线从坛侧进入屏后通道；遮挡拾取使用整窟几何，避免点击背屏时误选后面的西壁。
 - GLB 导出包含分部件几何、现状纹理及近似尺寸元数据，便于在 Blender 等软件继续修改；不包含网页色彩播放着色器。
 - 本次模型为本地研究版本，未提交或发布到 GitHub Pages。
@@ -69,3 +70,15 @@
 本轮材质细化：素土和铺地使用官方照片的局部样本；素土镜像重复，铺地重复。通用 PBR 纹理只提供中性表面的细微起伏，来自 assets/materials/ 中注明的 Poly Haven CC0 资源。图像照明经过场景灯光再次渲染，不作为颜料颜色测量或历史原色证据。
 
 验证结果见 qa/cave61-results.json、qa/3d-results.json、qa/walkthrough-results.json、qa/results.json。对应画面保存于 qa/cave61-*.png，模型和说明另存于上级“千壁浮光_模型”文件夹。
+
+## Blender 精修模型嵌入（2026-10-29）
+
+默认模型来自“第61窟_内部整体环境收尾版.blend”，包含 180 个可显示网格、34 张内嵌图像，排除相机、灯光及隐藏回退层。增加的墙脚、地面磨损、窟顶边线和方坛细节随模型加载。沿用网页灯光和导览镜头，画面不会与 Blender 静态渲染完全相同。
+
+网页模型约 13.5 MB：26 张颜色贴图转为 WebP，保留原像素尺寸和透明度；法线和数据贴图保留原格式。压缩前的 GLB 单独保存在上级模型目录。`scripts/prepare-interior-web.cjs` 可重建网页副本（需要 sharp，可通过 QIANBI_SHARP_PATH 指定已安装路径），`assets/cave61/interior-web-manifest.json` 记录转换、校验值和位置修正。
+
+网页适配修正了十条甬道细节带的延伸方向，使它们位于甬道而非主室；恢复顶面与甬道壁画覆盖底材所需的深度偏移；重新对应导入模型的剖视隐藏部件。壁画复色及点击定位继续作用于西壁，未重画原纹样。
+
+HTTP 页面按需加载 GLB；直接双击本地文件时，从同一模型生成的离线脚本读取模型。两种方式均显示“洞窟精修模型”。GLB 加载失败时显示“备用模型 · 精修版未载入”，不把回退版本当成精修版。
+
+本轮验证：`qa/check-interior-embed.cjs` 和 `qa/interior-embed/results.json`，截图位于 `qa/interior-embed/`。已检查九个视角、剖视隐藏与恢复、色彩滑块与播放暂停、壁画上下层点击、键盘操作、退出重进、离线打开、图形上下文中断恢复、入窟动画和资源失败回退。390px/320px 为浏览器模拟，未覆盖实体手机。测试范围仅为本机网页，尚未推送 GitHub 或更新 GitHub Pages。

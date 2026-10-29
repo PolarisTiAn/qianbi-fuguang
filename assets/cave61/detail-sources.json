@@ -203,6 +203,40 @@
     "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
   },
   {
+    "file": "entrance-rock.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/menkou/r.jpg",
+    "part": "门口侧壁岩土材质样本",
+    "crop": [
+      1100,
+      250,
+      1536,
+      1400
+    ],
+    "pixels": [
+      512,
+      1024
+    ],
+    "processing": "Side-rock/plaster crop retained as a repeated material sample; no facade panorama flattening",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
+    "file": "entrance-floor.webp",
+    "source_file": "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/menkou/b.jpg",
+    "part": "门口与甬道铺地样本",
+    "crop": [
+      230,
+      980,
+      1320,
+      1536
+    ],
+    "pixels": [
+      1024,
+      768
+    ],
+    "processing": "Interior-facing panorama floor crop retained; grey slab joints and present-day wear left visible",
+    "source": "https://www.e-dunhuang.com/cave/10.0001/0001.0001.0061"
+  },
+  {
     "file": "screen-rear-projected.webp",
     "source_files": [
       "/Users/polaris/Documents/网站搭建/千壁浮光_参考素材/第61窟_三维建模资料_2026-10-28/panorama/beiping/f.jpg",

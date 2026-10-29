@@ -1,5 +1,8 @@
 import { build } from 'esbuild';
-import { copyFile } from 'node:fs/promises';
+import { copyFile, readFile, writeFile } from 'node:fs/promises';
+const model = await readFile('assets/cave61/Mogao061-interior-final-20261029.glb');
+await writeFile('assets/cave61/interior-model.offline.js',
+  `/* Generated from the same GLB for direct file opening. */\nwindow.__qianbiModelBase64='${model.toString('base64')}';\n`);
 await build({
   entryPoints: ['src/gallery.js'],
   bundle: true,

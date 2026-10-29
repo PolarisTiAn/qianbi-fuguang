@@ -1,0 +1,306 @@
+{
+  "source": "../千壁浮光_模型/Mogao061-interior-final-source-20261029.glb",
+  "target": "assets/cave61/Mogao061-interior-final-20261029.glb",
+  "sourceBytes": 37562868,
+  "webBytes": 13503204,
+  "sha256": "33892b4e54b414df8e4aa080170b22c34db6c1b5e665137073306aac9de4f579",
+  "meshCount": 180,
+  "imageCount": 34,
+  "meshVertexDataUnchanged": true,
+  "placementCorrections": [
+    {
+      "name": "甬道左壁_墙脚夯土带",
+      "before": [
+        1.7200000286102295,
+        6.539999961853027
+      ],
+      "after": [
+        6.539999961853027,
+        11.359999895095825
+      ]
+    },
+    {
+      "name": "甬道右壁_墙脚夯土带",
+      "before": [
+        1.7200000286102295,
+        6.539999961853027
+      ],
+      "after": [
+        6.539999961853027,
+        11.359999895095825
+      ]
+    },
+    {
+      "name": "甬道左壁_破损上缘",
+      "before": [
+        1.7799999713897705,
+        6.559999942779541
+      ],
+      "after": [
+        6.559999942779541,
+        11.339999914169312
+      ]
+    },
+    {
+      "name": "甬道右壁_破损上缘",
+      "before": [
+        1.7799999713897705,
+        6.559999942779541
+      ],
+      "after": [
+        6.559999942779541,
+        11.339999914169312
+      ]
+    },
+    {
+      "name": "甬道左壁_低位层理",
+      "before": [
+        1.7599999904632568,
+        6.559999942779541
+      ],
+      "after": [
+        6.559999942779541,
+        11.359999895095825
+      ]
+    },
+    {
+      "name": "甬道左壁_中位层理",
+      "before": [
+        1.7599999904632568,
+        6.559999942779541
+      ],
+      "after": [
+        6.559999942779541,
+        11.359999895095825
+      ]
+    },
+    {
+      "name": "甬道左壁_残损交界层",
+      "before": [
+        1.7599999904632568,
+        6.559999942779541
+      ],
+      "after": [
+        6.559999942779541,
+        11.359999895095825
+      ]
+    },
+    {
+      "name": "甬道右壁_低位层理",
+      "before": [
+        1.7599999904632568,
+        6.559999942779541
+      ],
+      "after": [
+        6.559999942779541,
+        11.359999895095825
+      ]
+    },
+    {
+      "name": "甬道右壁_中位层理",
+      "before": [
+        1.7599999904632568,
+        6.559999942779541
+      ],
+      "after": [
+        6.559999942779541,
+        11.359999895095825
+      ]
+    },
+    {
+      "name": "甬道右壁_残损交界层",
+      "before": [
+        1.7599999904632568,
+        6.559999942779541
+      ],
+      "after": [
+        6.559999942779541,
+        11.359999895095825
+      ]
+    }
+  ],
+  "textureChanges": [
+    {
+      "name": "Image_1",
+      "sourceBytes": 2464744,
+      "webBytes": 169556,
+      "width": 1536,
+      "height": 1536
+    },
+    {
+      "name": "Image_23",
+      "sourceBytes": 1214648,
+      "webBytes": 115508,
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "name": "Image_6",
+      "sourceBytes": 690760,
+      "webBytes": 83454,
+      "width": 1050,
+      "height": 418
+    },
+    {
+      "name": "Image_21",
+      "sourceBytes": 167356,
+      "webBytes": 39598,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "name": "Image_22",
+      "sourceBytes": 1385468,
+      "webBytes": 116682,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "name": "Image_17",
+      "sourceBytes": 1008720,
+      "webBytes": 118640,
+      "width": 999,
+      "height": 511
+    },
+    {
+      "name": "Image_15",
+      "sourceBytes": 562248,
+      "webBytes": 55926,
+      "width": 1042,
+      "height": 438
+    },
+    {
+      "name": "Image_16",
+      "sourceBytes": 394164,
+      "webBytes": 43788,
+      "width": 1101,
+      "height": 220
+    },
+    {
+      "name": "Image_14",
+      "sourceBytes": 297296,
+      "webBytes": 37706,
+      "width": 1123,
+      "height": 139
+    },
+    {
+      "name": "Image_13",
+      "sourceBytes": 677036,
+      "webBytes": 74218,
+      "width": 1065,
+      "height": 387
+    },
+    {
+      "name": "Image_31",
+      "sourceBytes": 1044964,
+      "webBytes": 113608,
+      "width": 756,
+      "height": 844
+    },
+    {
+      "name": "Image_32",
+      "sourceBytes": 1747052,
+      "webBytes": 289844,
+      "width": 1000,
+      "height": 1434
+    },
+    {
+      "name": "Image_5",
+      "sourceBytes": 862708,
+      "webBytes": 103656,
+      "width": 1064,
+      "height": 423
+    },
+    {
+      "name": "Image_4",
+      "sourceBytes": 906900,
+      "webBytes": 99366,
+      "width": 1045,
+      "height": 432
+    },
+    {
+      "name": "Image_12",
+      "sourceBytes": 1195448,
+      "webBytes": 131518,
+      "width": 826,
+      "height": 724
+    },
+    {
+      "name": "Image_10",
+      "sourceBytes": 1222092,
+      "webBytes": 146786,
+      "width": 937,
+      "height": 633
+    },
+    {
+      "name": "Image_9",
+      "sourceBytes": 1259380,
+      "webBytes": 155536,
+      "width": 972,
+      "height": 585
+    },
+    {
+      "name": "Image_11",
+      "sourceBytes": 1174848,
+      "webBytes": 150566,
+      "width": 977,
+      "height": 539
+    },
+    {
+      "name": "Image_8",
+      "sourceBytes": 923976,
+      "webBytes": 107878,
+      "width": 953,
+      "height": 581
+    },
+    {
+      "name": "Image_25",
+      "sourceBytes": 744024,
+      "webBytes": 58752,
+      "width": 768,
+      "height": 768
+    },
+    {
+      "name": "Image_28",
+      "sourceBytes": 188632,
+      "webBytes": 17374,
+      "width": 570,
+      "height": 390
+    },
+    {
+      "name": "Image_26",
+      "sourceBytes": 225076,
+      "webBytes": 21378,
+      "width": 600,
+      "height": 390
+    },
+    {
+      "name": "Image_30",
+      "sourceBytes": 208172,
+      "webBytes": 18232,
+      "width": 1200,
+      "height": 132
+    },
+    {
+      "name": "Image_29",
+      "sourceBytes": 155444,
+      "webBytes": 15428,
+      "width": 450,
+      "height": 180
+    },
+    {
+      "name": "Image_27",
+      "sourceBytes": 191860,
+      "webBytes": 19020,
+      "width": 540,
+      "height": 180
+    },
+    {
+      "name": "Image_34",
+      "sourceBytes": 6571016,
+      "webBytes": 1121658,
+      "width": 2048,
+      "height": 1427
+    }
+  ]
+}

@@ -159,7 +159,11 @@ class Pavilion {
     this.textures = new Set([...wallStages, ...Object.values(references), ...Object.values(surfaceTextures)]);
     this.references = references;
     this.surfaceTextures = surfaceTextures;
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: false,
+      powerPreference: innerWidth < 650 ? 'low-power' : 'high-performance'
+    });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 650 ? 1.5 : 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -219,7 +223,7 @@ class Pavilion {
     buildCave61(this,this.references,this.surfaceTextures);
     const W=CAVE61.width,H=CAVE61.wallHeight;
     // One continuous image fills the west wall. No display frame or decorative strip.
-    this.wallMaterial = new THREE.MeshStandardMaterial({ map: this.wallStages[0], roughness: 1, bumpMap: relief, bumpScale: .008, emissive: '#ffffff', emissiveIntensity: .04 });
+    this.wallMaterial = new THREE.MeshStandardMaterial({ map: this.wallStages[0], roughness: 1, bumpMap: relief, bumpScale: .008, emissive: '#ffffff', emissiveIntensity: .018 });
     const anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
     this.wallStages.forEach(texture => { texture.anisotropy = anisotropy; });
     this.colorUniforms = { nextWallMap: { value: this.wallStages[1] }, colorReveal: { value: 0 } };
@@ -251,20 +255,22 @@ class Pavilion {
     this.proceduralRoot = this.modelRoot;
     this.blenderRoot = null;
     this.blenderWall = null;
-    this.passageLight = new THREE.PointLight('#fff0dd',10,12,2);
+    this.passageLight = new THREE.PointLight('#f4d0aa',7.5,12,2);
     this.passageLight.position.set(0,2.8,11.7);this.scene.add(this.passageLight);
-    this.caveAmbient = new THREE.HemisphereLight('#f2eee6','#968776',1.75);this.scene.add(this.caveAmbient);
-    this.doorLight = new THREE.DirectionalLight('#fff4e2',1.8);
+    this.caveAmbient = new THREE.HemisphereLight('#c8d0d3','#514033',1.28);this.scene.add(this.caveAmbient);
+    this.doorLight = new THREE.DirectionalLight('#ffd8b6',2.05);
     this.doorLight.position.set(-1.5,6,16);this.doorLight.target.position.set(0,1,3);
     this.doorLight.castShadow=true;
     this.doorLight.shadow.mapSize.set(1024,1024);
     Object.assign(this.doorLight.shadow.camera,{left:-9,right:9,top:9,bottom:-9,near:.5,far:32});
     this.doorLight.shadow.bias=-.0003;this.doorLight.shadow.normalBias=.04;
     this.scene.add(this.doorLight,this.doorLight.target);
-    this.entranceLight = new THREE.PointLight('#ffe4b9',7,13,1.7);
+    this.entranceLight = new THREE.PointLight('#e9ad7c',8.5,16,2);
     this.entranceLight.position.set(0,2.8,15.2);this.scene.add(this.entranceLight);
-    this.muralLight=new THREE.PointLight('#fff5e5',35,22,2);this.muralLight.position.set(0,4,2.8);this.scene.add(this.muralLight);
-    this.bounceLight=new THREE.PointLight('#f4e8d8',18,15,2);this.bounceLight.position.set(0,4.4,-5.5);this.scene.add(this.bounceLight);
+    this.muralLight=new THREE.PointLight('#ffe6cd',18,20,2);this.muralLight.position.set(0,4,2.8);this.scene.add(this.muralLight);
+    this.bounceLight=new THREE.PointLight('#b3947f',7,13,2);this.bounceLight.position.set(0,4.4,-5.5);this.scene.add(this.bounceLight);
+    this.wallBounceLight=new THREE.PointLight('#c4a080',4.5,11,2);this.wallBounceLight.position.set(-4.2,2.6,-.4);this.scene.add(this.wallBounceLight);
+    this.floorBounceLight=new THREE.PointLight('#bf956d',3.2,9,2);this.floorBounceLight.position.set(0,.7,3.8);this.scene.add(this.floorBounceLight);
     this.scene.updateMatrixWorld(true);
     this.renderer.shadowMap.needsUpdate = true;
   }
@@ -545,8 +551,8 @@ class Pavilion {
       }
     }
     const cutaway=currentView==='cutaway';
-    this.caveAmbient.intensity=cutaway?2:1.65;
-    this.renderer.toneMappingExposure=cutaway?1.05:1.0;
+    this.caveAmbient.intensity=cutaway?1.48:1.28;
+    this.renderer.toneMappingExposure=cutaway?1.02:.98;
     this.scene.background.set(cutaway?'#252b25':'#b7a389');
     this.camera.lookAt(this.controls.target);
     this.renderer.render(this.scene, this.camera);

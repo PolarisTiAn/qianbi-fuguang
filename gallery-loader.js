@@ -11,7 +11,7 @@
     try {
       if (!bundlePromise) bundlePromise = new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = 'gallery.bundle.js?v=20261030-lighting-study';
+        script.src = 'gallery.bundle.js?v=20261104-chamber-refined-r2';
         script.onload = resolve;
         script.onerror = () => { script.remove(); bundlePromise = null; reject(new Error('bundle')); };
         document.head.append(script);

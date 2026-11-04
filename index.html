@@ -7,10 +7,10 @@
   <meta name="description" content="千壁浮光，以莫高窟第61窟五台山图为起点，在山水、殿宇与行旅之间，开启一次敦煌壁画的交互探索。">
   <title>千壁浮光 · 敦煌壁画交互探索</title>
   <link rel="icon" type="image/svg+xml" href="assets/seal.svg">
-  <link rel="stylesheet" href="styles.css?v=20261029-blender-interior">
+  <link rel="stylesheet" href="styles.css?v=20261104-chamber-refined-r2">
   <script defer src="color-process.js"></script>
   <script defer src="app.js?v=20261029-blender-interior"></script>
-  <script defer src="gallery-loader.js?v=20261030-lighting-study"></script>
+  <script defer src="gallery-loader.js?v=20261104-chamber-refined-r2"></script>
 </head>
 <body>
   <a class="skip-link" href="#explore">跳到壁画探索</a>
@@ -74,8 +74,13 @@
               <a class="gallery-fallback-link" href="#explore">也可以直接细读画卷 →</a>
             </div>
             <div class="gallery-hud" aria-hidden="true"><span>莫高窟第 61 窟 <i>／</i> 入窟与西壁</span><span class="gallery-live">实景参考模型</span></div>
-            <div class="gallery-scene-caption" id="gallery-scene-caption" hidden><span>01 / 主室中央</span><p>西壁 · 上下层壁画关系</p></div>
-            <div class="threshold-prompt" id="threshold-prompt" hidden><span>洞口与甬道 · 实景参考模型</span><button id="gallery-walk">沿甬道入窟 <span aria-hidden="true">→</span></button><small>循着光，分五站走近一壁山河</small></div>
+            <div class="gallery-roam-ui" id="gallery-roam-ui" hidden>
+              <div class="gallery-roam-head"><span>自由漫游 <i aria-hidden="true">/</i> 莫高窟第六十一窟</span><small class="roam-desktop-hint">拖动转头 <i>·</i> WASD / 方向键移动 <i>·</i> Shift 快走</small><small class="roam-touch-hint">拖动转头 <i>·</i> 按住方向键移动</small><button id="gallery-roam-exit" aria-label="退出沉浸漫游并返回原观察视角">返回导览 <b aria-hidden="true">×</b></button></div>
+              <div class="gallery-walk-pad" role="group" aria-label="移动方向">
+                <button type="button" data-walk-key="KeyW" aria-label="前进" title="前进">↑</button>
+                <div><button type="button" data-walk-key="KeyA" aria-label="向左移动" title="向左移动">←</button><button type="button" data-walk-key="KeyS" aria-label="后退" title="后退">↓</button><button type="button" data-walk-key="KeyD" aria-label="向右移动" title="向右移动">→</button></div>
+              </div>
+            </div>
             <button class="gallery-leave" id="gallery-leave" hidden aria-label="退出原位构视，显示静态封面">退出 ×</button>
             <div class="gallery-wall-info" id="gallery-wall-info" hidden>
               <button id="gallery-wall-info-close" aria-label="关闭说明">×</button>
@@ -84,12 +89,13 @@
               <a href="#beyond">查看来源与说明 ↗</a>
             </div>
           </div>
+          <div class="gallery-scene-caption" id="gallery-scene-caption" hidden><span>洞口 / 循光而入</span><p>由洞口进入，观察甬道的平顶与两侧斜披。外部立面为示意。</p></div>
           <div class="gallery-route" id="gallery-route" hidden aria-label="入窟导览进度">
-            <button id="gallery-prev" disabled aria-label="返回上一站">← 上一站</button><span id="gallery-position">01 / 05 · 洞口远望</span><button id="gallery-next">下一站 · 甬道 →</button>
+            <button id="gallery-prev" disabled aria-label="返回上一站">← 上一站</button><span id="gallery-position">01 / 05 · 洞口远望</span><button id="gallery-next">下一站 · 沿甬道入窟 →</button>
           </div>
           <div class="gallery-toolbar" id="gallery-toolbar" hidden>
             <div class="gallery-viewpoints" role="group" aria-label="选择原位构视角度"><button data-gallery-view="entrance" aria-pressed="false"><b>01</b><span>洞口</span></button><button data-gallery-view="passage" aria-pressed="false"><b>02</b><span>甬道</span></button><button data-gallery-view="overview" aria-pressed="false"><b>03</b><span>主室</span></button><button data-gallery-view="front" aria-pressed="false"><b>04</b><span>坛后</span></button><button data-gallery-view="detail" aria-pressed="false"><b>05</b><span>近观</span></button><button data-gallery-view="altar" aria-pressed="false"><span>侧观佛坛</span></button><button data-gallery-view="rear" aria-pressed="false"><span>背屏后侧</span></button><button data-gallery-view="ceiling" aria-pressed="false"><span>仰望窟顶</span></button><button data-gallery-view="cutaway" aria-pressed="false"><b aria-hidden="true">⌑</b><span>剖视</span></button></div>
-            <div class="gallery-actions"><button id="gallery-zoom-out" aria-label="拉远观看">−</button><button id="gallery-zoom-in" aria-label="拉近观看">＋</button><button id="gallery-auto" aria-pressed="false">缓缓环视</button><button id="gallery-reset" aria-label="重置洞窟视角">归位 ↺</button><button id="gallery-read">细读画卷 ↗</button></div>
+            <div class="gallery-actions"><button id="gallery-zoom-out" aria-label="拉远观看">−</button><button id="gallery-zoom-in" aria-label="拉近观看">＋</button><button id="gallery-auto" aria-pressed="false">缓缓环视</button><button id="gallery-reset" aria-label="重置洞窟视角">归位 ↺</button><button id="gallery-immersion" aria-pressed="false" title="进入沉浸漫游">◉ 自由漫游</button><button id="gallery-read">细读画卷 ↗</button></div>
           </div>
           <div class="gallery-colorbar" id="gallery-colorbar" hidden>
             <div class="gallery-color-intro"><span>色彩过程</span><strong id="gallery-color-caption">现状影像</strong></div>
@@ -99,7 +105,7 @@
             <p class="gallery-color-note">拖动滑块或播放，观察色彩在壁面上逐步展开。数字视觉实验 · 非历史原色复原</p>
           </div>
         </div>
-        <div class="gallery-bottom"><p id="gallery-help">按“下一站”循序入窟 · 入室后拖动转向、双指缩放 · 点击西壁细读</p><span>据实景建模 · 尺寸为照片估计</span></div>
+        <div class="gallery-bottom"><p id="gallery-help">按“下一站”循序入窟 · 入室后拖动转向、双指缩放 · 也可进入自由漫游</p><span>据实景建模 · 尺寸为照片估计</span></div>
         <p class="sr-only" id="gallery-status" role="status" aria-live="polite"></p>
       </div>
     </section>

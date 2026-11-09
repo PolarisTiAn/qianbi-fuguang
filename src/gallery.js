@@ -37,7 +37,7 @@ function loadOfflineModel() {
   return offlineModelPromise;
 }
 const viewpointNames = { entrance:'洞口 / 循光而入', passage:'甬道 / 壁上星宿', overview:'主室 / 方坛与背屏', front:'坛后 / 走近西壁', detail:'近观 / 山水之间', altar:'侧观 / 二层方坛', rear:'屏后 / 环绕通道', ceiling:'仰望 / 藻井与千佛', cutaway:'剖视 / 空间关系' };
-const viewDescriptions = { entrance:'由洞口进入，观察甬道的平顶与两侧斜披。外部立面为示意。', passage:'壁画沿甬道展开，前方是方坛与高大的背屏。', overview:'四级踏步通向下层台面，上层佛坛向后退入。', front:'绕到背屏后方，走近《五台山图》。完整画卷可在下方展开。', detail:'西壁上部的山水与屋宇，下方是连屏式佛传故事。', altar:'侧看两层退台、台面残迹与独立背屏。', rear:'屏后立佛壁画来自六面全景的重投影；形状与比例仍为估计。', ceiling:'四面斜披收向中央藻井，千佛图案绘在壁面上。', cutaway:'隐去窟顶、东壁与北壁，查看方坛和环绕通道。' };
+const viewDescriptions = { entrance:'由洞口进入，观察甬道的平顶与两侧斜披。立面与风化细节依资料推演。', passage:'壁画沿甬道展开，前方是方坛与高大的背屏。', overview:'四级踏步通向下层台面，上层佛坛向后退入。', front:'绕到背屏后方，走近《五台山图》。完整画卷可在下方展开。', detail:'西壁上部的山水与屋宇，下方是连屏式佛传故事。', altar:'侧看两层退台、台面残迹与独立背屏。', rear:'屏后立佛壁画来自六面全景的重投影；形状与比例仍为估计。', ceiling:'四面斜披收向中央藻井，千佛图案绘在壁面上。', cutaway:'隐去窟顶、东壁与北壁，查看方坛和环绕通道。' };
 const isThreshold = view => view === 'entrance' || view === 'passage';
 const colorStages = window.QianbiColor.stages;
 let pavilion = null;
@@ -270,15 +270,21 @@ class Pavilion {
     this.doorLight = new THREE.DirectionalLight('#ffd8b6',2.05);
     this.doorLight.position.set(-1.5,6,16);this.doorLight.target.position.set(0,1,3);
     this.doorLight.castShadow=true;
-    this.doorLight.shadow.mapSize.set(1024,1024);
+    this.doorLight.shadow.mapSize.set(innerWidth < 650 ? 1024 : 2048,innerWidth < 650 ? 1024 : 2048);
     Object.assign(this.doorLight.shadow.camera,{left:-9,right:9,top:9,bottom:-9,near:.5,far:32});
     this.doorLight.shadow.bias=-.0003;this.doorLight.shadow.normalBias=.04;
     this.scene.add(this.doorLight,this.doorLight.target);
     this.entranceLight = new THREE.PointLight('#e9ad7c',8.5,16,2);
     this.entranceLight.position.set(0,2.8,15.2);this.scene.add(this.entranceLight);
-    this.muralLight=new THREE.PointLight('#ffe6cd',18,20,2);this.muralLight.position.set(0,4,2.8);this.scene.add(this.muralLight);
+    this.muralLight=new THREE.PointLight('#e5d9c4',18,20,2);this.muralLight.position.set(0,4,2.8);this.scene.add(this.muralLight);
+    this.muralLight.castShadow=true;
+    this.muralLight.shadow.mapSize.set(512,512);
+    this.muralLight.shadow.camera.near=.2;
+    this.muralLight.shadow.camera.far=20;
+    this.muralLight.shadow.bias=-.00015;
+    this.muralLight.shadow.normalBias=.025;
     this.bounceLight=new THREE.PointLight('#b3947f',7,13,2);this.bounceLight.position.set(0,4.4,-5.5);this.scene.add(this.bounceLight);
-    this.wallBounceLight=new THREE.PointLight('#c4a080',4.5,11,2);this.wallBounceLight.position.set(-4.2,2.6,-.4);this.scene.add(this.wallBounceLight);
+    this.wallBounceLight=new THREE.PointLight('#bfbbad',2.6,11,2);this.wallBounceLight.position.set(-4.2,2.6,-.4);this.scene.add(this.wallBounceLight);
     this.floorBounceLight=new THREE.PointLight('#bf956d',3.2,9,2);this.floorBounceLight.position.set(0,.7,3.8);this.scene.add(this.floorBounceLight);
     this.scene.updateMatrixWorld(true);
     this.renderer.shadowMap.needsUpdate = true;
@@ -303,17 +309,26 @@ class Pavilion {
     root.name = 'Mogao-061-Blender-interior-refined';
     root.userData = {
       source: refinedModelURL,
-      accuracy: '公开照片引导的 Blender 精修估算，非测绘或扫描复原'
+      accuracy: '公开照片参考与局部艺术推演，非测绘或扫描复原'
     };
     this.refinedCutawayMeshes = [];
     root.updateMatrixWorld(true);
     root.traverse(object => {
       if (!object.isMesh) return;
+      // glTF splits multi-material objects (including the timber gate) into
+      // primitive children. Retain the source object name for view visibility.
+      let sourceObject = object;
+      while (sourceObject.parent && sourceObject.parent !== root) sourceObject = sourceObject.parent;
+      const name = sourceObject.name || object.name;
+      object.userData.sourceObjectName = name;
       object.castShadow = true;
       object.receiveShadow = true;
       object.frustumCulled = true;
       const materials = Array.isArray(object.material) ? object.material : [object.material];
       materials.forEach(material => {
+        // Baked local visibility gives corners and altar bases a grounded
+        // contact shadow without an expensive full-screen mobile effect.
+        if (material.aoMap) material.aoMapIntensity = .72;
         for (const value of Object.values(material)) {
           if (value?.isTexture) {
             this.textures.add(value);
@@ -322,14 +337,13 @@ class Pavilion {
         }
         // glTF does not carry Three.js polygon offsets. Restore them for
         // painted skins coincident with the underlying plaster surface.
-        if (/^roof.*official-paint|^passage.*official-mural/.test(object.name)) {
+        if (/^roof.*official-paint|^passage.*official-mural/.test(name)) {
           material.polygonOffset = true;
           material.polygonOffsetFactor = -2;
           material.polygonOffsetUnits = -2;
           object.castShadow = false;
         }
       });
-      const name = object.name;
       const passageFloor = name.startsWith('main-floor-individual-slab-grid') &&
         new THREE.Box3().setFromObject(object).getCenter(new THREE.Vector3()).z > 6.4;
       if (/^(roof|central-painted-caisson|north-|east-|entrance-|door-|passage|甬道|主室北侧_|主室东侧)/.test(name) ||
@@ -339,6 +353,9 @@ class Pavilion {
     if (!wall) throw new Error('refined-model-wall-missing');
     // Reuse the existing wall shader so the published color-process controls
     // still work on the Blender geometry.
+    this.wallMaterial.aoMap = wall.material.aoMap;
+    this.wallMaterial.aoMapIntensity = .6;
+    this.wallMaterial.needsUpdate = true;
     wall.material.dispose();
     wall.material = this.wallMaterial;
     this.scene.add(root);
@@ -726,16 +743,16 @@ class Pavilion {
     this.adaptedLight ??= targetLight;
     this.adaptedLight = THREE.MathUtils.lerp(this.adaptedLight,targetLight,1-Math.exp(-dt/0.65));
     const mix = this.adaptedLight;
-    this.muralLight.intensity=THREE.MathUtils.lerp(7,35,mix);
-    this.bounceLight.intensity=THREE.MathUtils.lerp(4.5,18,mix);
-    this.passageLight.intensity=THREE.MathUtils.lerp(3.8,10,mix);
+    this.muralLight.intensity=THREE.MathUtils.lerp(4,23,mix);
+    this.bounceLight.intensity=THREE.MathUtils.lerp(2.5,10,mix);
+    this.passageLight.intensity=THREE.MathUtils.lerp(3.8,8,mix);
     this.entranceLight.intensity=THREE.MathUtils.lerp(5.5,7,mix);
-    this.floorBounceLight.intensity=THREE.MathUtils.lerp(3.2,4.2,mix);
-    this.caveAmbient.intensity=cutaway?1.48:THREE.MathUtils.lerp(1.18,1.28,mix);
-    this.renderer.toneMappingExposure=cutaway?1.02:THREE.MathUtils.lerp(.98,1.03,mix);
+    this.floorBounceLight.intensity=THREE.MathUtils.lerp(.8,1.8,mix);
+    this.caveAmbient.intensity=cutaway?1.2:THREE.MathUtils.lerp(.68,.86,mix);
+    this.renderer.toneMappingExposure=cutaway?1.08:THREE.MathUtils.lerp(1.05,1.18,mix);
     frame.dataset.lightMix=mix.toFixed(2);
     frame.dataset.space=this.camera.position.z>11.45?'entrance':this.camera.position.z>6.5?'passage':'chamber';
-    this.scene.background.set(cutaway?'#252b25':'#b7a389');
+    this.scene.background.set(cutaway?'#252b25':'#a3947f');
     this.camera.lookAt(this.controls.target);
     this.renderer.render(this.scene, this.camera);
   }
@@ -798,7 +815,7 @@ class Pavilion {
 window.QianbiGallery = {
   inspect(){
     if(!pavilion)return null;
-    const objects=[];pavilion.modelRoot.traverse(o=>{if(o.isMesh)objects.push({name:o.name,vertices:o.geometry.attributes.position.count,visible:visibleAncestors(o),bounds:new THREE.Box3().setFromObject(o)});});
+    const objects=[];pavilion.modelRoot.traverse(o=>{if(o.isMesh)objects.push({name:o.name,sourceName:o.userData.sourceObjectName||o.name,vertices:o.geometry.attributes.position.count,visible:visibleAncestors(o),bounds:new THREE.Box3().setFromObject(o)});});
     return {model:pavilion.blenderRoot?'blender-refined':'procedural-fallback',camera:pavilion.camera.position.toArray(),target:pavilion.controls.target.toArray(),roaming:pavilion.roaming,parameters:CAVE61,objects};
   },
   async exportModel(){
